@@ -8,7 +8,28 @@ module.exports.generateToken = (data) => {
 }
 
 module.exports.validateFormat = (req, res, next) => {
-    
+    const body = req.body;
+    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var status = true;
+    // Validate email format
+    // [a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*    
+
+    if (!/^[aA-zZ0-9_\.]+$/.test(body.nombreUsuario)){
+        status = false;
+        result.username = "INCORRECT_FORMAT"
+    }
+    if (!/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(body.email)){
+        status = false;
+        result.email = "INCORRECT_FORMAT"
+    }
+
+    if (status===true){
+        next()
+    } else {
+        console.log(result)
+        res.status(404).send(result);
+    }
+    // Validate usrname format
 }
 
 
@@ -17,7 +38,7 @@ module.exports.validateFormat = (req, res, next) => {
 module.exports.validateUser =async  (req, res, next) => { // Check exists in db
     try {
         const body = req.body;
-        if(body.nombreUsuario!=undefined && body.email!=undefined){
+        // if(body.nombreUsuario!=undefined && body.email!=undefined){
             user = {
                 nombreUsuario: req.body.nombreUsuario,
                 email: req.body.email
@@ -27,7 +48,7 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
 
             console.log("users id with username: ", usernameUsed)
             console.log("users id with email: ", emailUsed)
-            var result = {success: "success", message: "", username: "AVAILABLE", email: "AVAILABLE" };
+            var result = {success: "SUCCESS", message: ""};
     
             if (usernameUsed.length>0 || emailUsed.length>0){   // Validacion de datos en uso
                 result.success = "ERROR";
@@ -40,10 +61,10 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
                 next();
             }
 
-        } else { // Falta un parámetro en los datos a registrar
-            console.log("Not data complete... username and email are required params")
-            res.status(404).send({success: "ERROR", message:"INCOMPLETE_DATA", username: `${req.body.nombreUsuario}`, email: `${req.body.email}`});
-        }
+        // } else { // Falta un parámetro en los datos a registrar
+        //     console.log("Not data complete... username and email are required params")
+        //     res.status(404).send({success: "ERROR", message:"INCOMPLETE_DATA", username: `${req.body.nombreUsuario}`, email: `${req.body.email}`});
+        // }
     } catch (error) {   // Error en la validación de datos
         res.json({
             success: "ERROR",
