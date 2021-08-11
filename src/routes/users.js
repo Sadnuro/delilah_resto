@@ -31,7 +31,7 @@ router.post('/user', auth.validateFormat, auth.validateUser, async (req, res) =>
     }
 });
 
-router.put('/user/:id', async (req, res) => {
+router.put('/user/:id',auth.authAdmin, auth.validateFormat, async (req, res) => {
     try {
         const user = req.body;
         const Id = req.params.id
@@ -47,7 +47,7 @@ router.put('/user/:id', async (req, res) => {
 
 });
 
-router.patch('/user/:id', async (req, res) => {
+router.patch('/user/:id',auth.validateFormatUpdate, async (req, res) => {
     const user = req.body;
     const Id = req.params.id
     if (user.email) {
@@ -66,10 +66,9 @@ router.patch('/user/:id', async (req, res) => {
         const resultContrasena = await actions.Update(`UPDATE usuarios SET contrasena = :contrasena WHERE id = ${Id}`, { contrasena: user.contrasena });
     }
     res.json(" correctly updated");
-
 });
 
-router.delete('/user/:id', async (req, res) => {
+router.delete('/user/:id', auth.authAdmin, async (req, res) => {
     const result = await actions.Delete('DELETE FROM usuarios WHERE id = :id', { id: req.params.id })
     res.json("user had been deleted");
 });

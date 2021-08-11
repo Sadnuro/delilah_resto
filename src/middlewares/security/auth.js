@@ -68,17 +68,17 @@ module.exports.validateFormatUpdate = (req, res, next) => {
      var status = true;
  
      // Validate username
-     if (body.nombreUsuario!=undefined || !/^[aA-zZ0-9_\.]+$/.test(body.nombreUsuario)){
+     if (body.nombreUsuario!=undefined && !/^[aA-zZ0-9_\.]+$/.test(body.nombreUsuario)){
          status = false;
          result.nombreUsuario = "INCORRECT_FORMAT"
      }
      // Validate fullname
-     if(body.nombreCompleto!=undefined || !/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})*$/.test(body.nombreCompleto)){
+     if(body.nombreCompleto!=undefined && !/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})*$/.test(body.nombreCompleto)){
          status = false;
          result.nombreCompleto = "INCORRECT_FORMAT";
      }
      // Validate email
-     if (body.email!=undefined || !/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(body.email)){
+     if (body.email!=undefined && !/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(body.email)){
          status = false;
          result.email = "INCORRECT_FORMAT"
      }
