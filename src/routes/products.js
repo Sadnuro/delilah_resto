@@ -1,21 +1,21 @@
-const express = require('express');
-const auth = require('../middlewares/security/auth');
-const actions = require('../database/actions');
-
+const express = require("express");
 const router = express.Router();
+const actions = require('../database/actions');
+const auth =  require('../middlewares/security/auth');
 
-router.get('/users',auth.authAdmin, async (req, res)=> {
+
+router.get('/productos', async (req, res)=> {
     const result = await actions.Select('SELECT * FROM usuarios', {});
     res.json(result);
 });
 
-router.get('/user/:id', async (req, res)=> {
-    const result = await actions.Select('SELECT * FROM usuarios WHERE id = :id', { id: req.params.id });
+router.get('/productos/:id', async (req, res)=> {
+    const result = await actions.Select('SELECT * FROM productos WHERE id = :id', { id: req.params.id });
     res.json(result);
 });
 
 // Verifica si datos únicos ya están registrados
-router.post('/user', auth.validateUser,  async (req, res)=> {
+router.post('/product', auth.authAdmin,  async (req, res)=> {
     const user = req.body;
     console.log("req.body: ", user)
     let result;
@@ -31,17 +31,17 @@ router.post('/user', auth.validateUser,  async (req, res)=> {
     }    
 });
 
-router.put('/user/:id',auth.authAdmin, async (req, res)=> {
+router.put('/product/:id',auth.authAdmin, async (req, res)=> { // Actualizar todo el producto
     //Code here
 });
 
-router.patch('/user/:id', auth.authAdmin, async (req, res)=> {
+router.patch('/product/:id', auth.authAdmin, async (req, res)=> { // Actualizar solo una propiedad del producto
     const user = req.body;
     const result = await actions.Update(`UPDATE usuarios SET email = :email WHERE id = :id`, user);
     res.json(result);
 });
 
-router.delete('/user/:id', auth.authAdmin, async (req, res)=> {
+router.delete('/product/:id', auth.authAdmin, async (req, res)=> {
     //Code here
 });
 

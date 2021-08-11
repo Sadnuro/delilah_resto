@@ -4,13 +4,13 @@ const actions = require('../database/actions');
 
 
 /*
-- Nombre de usuario unico en db
+- *** Nombre de usuario unico en db
 - Probar peticiones de ordenes por id y por username
-- Validar rol para get de endpoints usuarios
-    usuario: acceso a [/user:id] (propio)
+- *** Validar rol para get de endpoints usuarios
+        usuario: acceso a [/user:id] (propio)
 - router: products enpoints (CRUD)
 
-- Middleware validar rol | Validar id usuario
+- *** Middleware validar rol | Validar id usuario
 */
 
 router.get('/orders',  (req, res)=> {
