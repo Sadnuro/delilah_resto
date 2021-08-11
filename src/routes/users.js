@@ -31,17 +31,47 @@ router.post('/user', auth.validateFormat, auth.validateUser, async (req, res) =>
     }
 });
 
-router.put('/user/:id', auth.authAdmin, async (req, res) => { // Actualiza todo el objeto
-    //Code here
+router.put('/user/:id', async (req, res) => {
+    try {
+        const user = req.body;
+        const Id = req.params.id
+        const result = await actions.Update(`UPDATE usuarios SET email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion = :direccion, contrasena = :contrasena  WHERE id = ${Id}`, user);
+        res.json(result);
+    } catch (error) {
+        console.log({ msj: error.message });
+        res.json({
+            error: "El usuario no proporciono todos los datos"
+        })
+    }
+
+
 });
 
-router.patch('/user/:id', auth.authAdmin, async (req, res) => { // Actualiza algunos valores
+router.patch('/user/:id', async (req, res) => {
+    const user = req.body;
+    const Id = req.params.id
+    if (user.email) {
+        const resultemail = await actions.Update(`UPDATE usuarios SET email = :email WHERE id = ${Id}`, { email: user.email });
+    }
+    if (user.nombreCompleto) {
+        const resultNombreCompleto = await actions.Update(`UPDATE usuarios SET  nombreCompleto = :nombreCompleto WHERE id = ${Id}`, { nombreCompleto: user.nombreCompleto });
+    }
+    if (user.telefono) {
+        const resultTelefono = await actions.Update(`UPDATE usuarios SET  telefono = :telefono WHERE id = ${Id}`, { telefono: user.telefono });
+    }
+    if (user.direccion) {
+        const resultDireccion = await actions.Update(`UPDATE usuarios SET direccion = :direccion WHERE id = ${Id}`, { direccion: user.direccion });
+    }
+    if (user.contrasena) {
+        const resultContrasena = await actions.Update(`UPDATE usuarios SET contrasena = :contrasena WHERE id = ${Id}`, { contrasena: user.contrasena });
+    }
+    res.json(" correctly updated");
 
 });
 
 router.delete('/user/:id', async (req, res) => {
-    //Code here
-    const body = req.body
+    const result = await actions.Delete('DELETE FROM usuarios WHERE id = :id', { id: req.params.id })
+    res.json("user had been deleted");
 });
 
 module.exports = router;
