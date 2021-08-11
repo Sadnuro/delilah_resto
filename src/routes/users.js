@@ -41,9 +41,9 @@ router.patch('/user/:id', auth.authAdmin, async (req, res)=> { // Actualiza algu
     res.json(result);
 });
 
-router.delete('/user/:id', auth.authAdmin, async (req, res)=> {
+router.delete('/user/:id', async (req, res)=> {
     //Code here
+    const body = req.body
 });
 
 module.exports = router;
-
