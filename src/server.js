@@ -7,6 +7,7 @@ const express = require('express');
 const userRouter = require('./routes/users');
 const orderRouter = require('./routes/orders');
 const authRouter = require('./routes/auth');
+const productsRouter = require('./routes/products');
 
 const server = express();
 // server.use(bodyparser.json());
@@ -16,15 +17,16 @@ server.use(express.json())
 server.use('/', userRouter);
 server.use('/', orderRouter);
 server.use('/', authRouter);
+server.use('/', productsRouter);
+
 
 const port = 3000;
 
-server.get('/', (req, res)=> {
+server.get('/', (req, res) => {
     res.send('Bienvenido');
 });
 
-
-server.listen(port, ()=> {
+server.listen(port, () => {
     console.log(`Servidor corriendo en el puerto ${port}`);
 });
 
