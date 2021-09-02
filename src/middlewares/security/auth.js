@@ -7,6 +7,50 @@ module.exports.generateToken = (data) => {
     return jwt.sign(data, firma);
 }
 
+module.exports.validateToken = async (req, res, next) => {
+    /**
+     * Inserta en el body:
+     * 
+     */
+    const token = req.headers.authorization.split(' ')[1];
+    const verifyedToken = jwt.verify(token, firma);
+    try {
+        const existUser = await actions.Select(`SELECT id, idRole FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}"`);
+        if(existUser.length>0){
+            req.body.ids = existUser[0];
+            return next();
+        } else {
+            res.json({success: false, msg: "Not found user"})
+        }   
+    } catch (error) {
+        console.log(error);
+        res.send({success: false, msg: error.message});
+    }
+}
+
+// Utiliza es req.user creado en [auth.auth], de no existir se debería descifrar el token
+module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
+    const token = req.headers.authorization.split(' ')[1];
+    const verifyedToken = jwt.verify(token, firma);
+    try {
+        // Admin information | username unique
+        const isAdmin = await actions.Select(`SELECT * FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}" AND idRole=1`, {});
+        if(isAdmin.length>0){
+            return next();
+        }else {
+            res.json({
+                error: "El usuario no tiene permisos para realizar esta acción"
+            })
+        }
+    } catch(error){
+        console.log({msj: error.message});
+        res.json({
+            error: "El usuario no tiene permisos para realizar esta acción"
+        })
+    }
+}
+
+
 module.exports.validateFormat = (req, res, next) => {
     const body = req.body;
     var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
@@ -68,17 +112,17 @@ module.exports.validateFormatUpdate = (req, res, next) => {
      var status = true;
  
      // Validate username
-     if (body.nombreUsuario!=undefined || !/^[aA-zZ0-9_\.]+$/.test(body.nombreUsuario)){
+     if (body.nombreUsuario!=undefined && !/^[aA-zZ0-9_\.]+$/.test(body.nombreUsuario)){
          status = false;
          result.nombreUsuario = "INCORRECT_FORMAT"
      }
      // Validate fullname
-     if(body.nombreCompleto!=undefined || !/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})*$/.test(body.nombreCompleto)){
+     if(body.nombreCompleto!=undefined && !/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})*$/.test(body.nombreCompleto)){
          status = false;
          result.nombreCompleto = "INCORRECT_FORMAT";
      }
      // Validate email
-     if (body.email!=undefined || !/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(body.email)){
+     if (body.email!=undefined && !/[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(body.email)){
          status = false;
          result.email = "INCORRECT_FORMAT"
      }
@@ -143,25 +187,3 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
         });
     }
 };
-
-// Utiliza es req.user creado en [auth.auth], de no existir se debería descifrar el token
-module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
-    const token = req.headers.authorization.split(' ')[1];
-    const verifyedToken = jwt.verify(token, firma);
-    try {
-        // Admin information | username unique
-        const isAdmin = await actions.Select(`SELECT * FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}" AND idRole=1`, {});
-        if(isAdmin.length>0){
-            return next();
-        }else {
-            res.json({
-                error: "El usuario no tiene permisos para realizar esta acción"
-            })
-        }
-    } catch(error){
-        console.log({msj: error.message});
-        res.json({
-            error: "El usuario no tiene permisos para realizar esta acción"
-        })
-    }
-}
