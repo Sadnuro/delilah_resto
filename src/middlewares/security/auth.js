@@ -151,6 +151,60 @@ module.exports.validateFormatUpdate = (req, res, next) => {
 
 }
 
+module.exports.validateFormatUpdateOrder = async (req, res, next) => {
+    /**
+     * Un valor [undcefined] en un parámetro consultado es un parámetro que no existe,
+     * por lo tanto se ignora al creerse que no se quiere modificar
+     * 
+     * Un valor !=undefined debe pasar por la validación del formato
+     * 
+     */
+    const body = req.body;
+    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var status = true;
+
+    // Validate id | NOT UPDATE, IS FOREIGN KEY OF [DETALLESORDENES]
+    // if (body.id!=undefined && !/^\d+$/.test(body.id)){
+    //     status = false;
+    //     result.id = "INCORRECT_FORMAT"
+    // }
+
+    // Validate IdUser | NOT UPDATE, IS FOREIGN KEY
+    // if (body.IdUser!=undefined && !/^\d+$/.test(body.IdUser)){
+    //     status = false;
+    //     result.IdUser = "INCORRECT_FORMAT";
+    // }
+
+    // Validate nombre
+    if(body.nombre!=undefined && !/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})*$/.test(body.nombre)){
+        status = false;
+        result.nombre = "INCORRECT_FORMAT";
+    }
+    // Validate total
+    if (body.total!=undefined && !/^\d+$/.test(body.total)){
+        status = false;
+        result.total = "INCORRECT_FORMAT"
+    } 
+    // Validate tipoPago
+    if (body.tipoPago!=undefined &&  !/^[1-3]+$/.test(body.tipoPago)){
+        status = false;
+        result.tipoPago = "INCORRECT_FORMAT"
+    }
+    // Validate tipoPago
+    if (body.estado!=undefined &&  !/^[1-6]+$/.test(body.estado)){
+        status = false;
+        result.estado = "INCORRECT_FORMAT"
+    }
+
+
+    if (status===true){
+        next()
+    } else {
+        console.log(result)
+        res.status(404).send(result);
+    }
+}
+
 
 // Se utiliza cuando ocurre un registro de usuario para verificar 
 // existencia del userName, correo y datos únicos en un registro previo

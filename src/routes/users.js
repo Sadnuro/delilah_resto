@@ -43,8 +43,6 @@ router.put('/user/:id',auth.authAdmin, auth.validateFormat, async (req, res) => 
             error: "El usuario no proporciono todos los datos"
         })
     }
-
-
 });
 
 router.patch('/user/:id',auth.validateFormatUpdate, async (req, res) => {
@@ -69,8 +67,17 @@ router.patch('/user/:id',auth.validateFormatUpdate, async (req, res) => {
 });
 
 router.delete('/user/:id', auth.authAdmin, async (req, res) => {
-    const result = await actions.Delete('DELETE FROM usuarios WHERE id = :id', { id: req.params.id })
-    res.json("user had been deleted");
+    try {
+        const result = await actions.Delete('DELETE FROM usuarios WHERE id=:id', { id: req.params.id })
+        console.log("Delete result:", result);
+        if(result===undefined){
+            res.status(505).json({success: false, msg: "USER_NOT_FOUND"});
+        } else {
+            res.status(202).json({success: true, msg: "User has been deleted"});
+        }
+    } catch (error) {
+        res.status(505).json({success: false, msg: error.message});
+    }
 });
 
 module.exports = router;

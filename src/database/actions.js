@@ -8,6 +8,11 @@ module.exports.Select = async (query, data={}) => {
     });
 }
 
+module.exports.query = async (query) =>{
+    // const options = {raw: true, transaction: t};
+    return await database.query(query)
+}
+
 module.exports.Insert = async (query, data={}) => {
     let result;
     try {
