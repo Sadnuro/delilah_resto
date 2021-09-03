@@ -63,8 +63,6 @@ router.get('/order/:id', auth.validateToken, async (req, res)=> {// Admin | User
     } catch (error) {
         res.status(500).send({success: false, msg: error.message});
     }
-
-
 });
 
 router.post('/order', auth.validateToken, async (req, res)=> { // User

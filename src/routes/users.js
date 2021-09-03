@@ -1,83 +1,174 @@
-const express = require('express');
-const auth = require('../middlewares/security/auth');
-const actions = require('../database/actions');
+const express = require("express");
+const auth = require("../middlewares/security/auth");
+const actions = require("../database/actions");
 
 const router = express.Router();
 
-router.get('/users', auth.authAdmin, async (req, res) => {
-    const result = await actions.Select('SELECT * FROM usuarios', {});
-    res.json(result);
+router.get("/users", async (req, res) => {
+  try {
+    const result = await actions.Select("SELECT * FROM usuarios", {});
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 });
 
-router.get('/user/:id', async (req, res) => {
-    const result = await actions.Select('SELECT * FROM usuarios WHERE id = :id', { id: req.params.id });
-    res.json(result);
+router.get("/user/:id", async (req, res) => {
+  try {
+    const result = await actions.Select(
+      "SELECT * FROM usuarios WHERE id = :id",
+      { id: req.params.id }
+    );
+    if (result.length === 0) {
+      res.status(404).json({ success: false, message: "User not found" });
+    } else {
+      res.status(200).json({ success: true, data: result });
+    }
+  } catch (error) {
+    res.json({
+      error: `${error.message}`,
+    });
+  }
 });
 
 // Verifica si datos únicos ya están registrados
-router.post('/user', auth.validateFormat, auth.validateUser, async (req, res) => {   // 
-    const user = req.body;
-    console.log("req.body: ", user)
-    let result;
-    user.nombreUsuario = user.nombreUsuario.toLowerCase();
-    // user.nombreUsuaurio = user.nombreUsuario;
-    result = await actions.Insert(`INSERT INTO usuarios (nombreUsuario, nombreCompleto, email, telefono, direccion, contrasena, idRole) 
-            VALUES (:nombreUsuario, :nombreCompleto, :email, :telefono, :direccion, :contrasena, :idRole)`, user);
-    if (result.error) {
-        console.log(result.message);
-        res.status(500).json(result.message);
-    } else {
-        res.json(result);
-    }
-});
-
-router.put('/user/:id',auth.authAdmin, auth.validateFormat, async (req, res) => {
+router.post("/user", async (req, res) => {
+  //
+  const user = req.body;
+  user.nombreUsuario = user.nombreUsuario.toLowerCase();
+  console.log(user.nombreUsuario);
+  const existsID = await actions.Select(
+    "SELECT * FROM usuarios WHERE id = :id ",
+    { id: user.id }
+  );
+  const existsNombre = await actions.Select(
+    "SELECT * FROM usuarios WHERE nombreUsuario = :nombreUsuario",
+    { nombreUsuario: user.nombreUsuario }
+  );
+  if (existsID.length > 0 || existsNombre.length > 0) {
+    res.status(404).json({ success: false, message: "user exists already" });
+  } else {
     try {
-        const user = req.body;
-        const Id = req.params.id
-        const result = await actions.Update(`UPDATE usuarios SET email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion = :direccion, contrasena = :contrasena  WHERE id = ${Id}`, user);
-        res.json(result);
+      result = await actions.Insert(
+        `INSERT INTO usuarios (id, nombreUsuario, nombreCompleto, email, telefono, direccion, contrasena, idRole) 
+            VALUES (:id,:nombreUsuario, :nombreCompleto, :email, :telefono, :direccion, :contrasena, :idRole)`,
+        user
+      );
+      res.status(201).json({ success: true, message: "User has been created" });
     } catch (error) {
-        console.log({ msj: error.message });
-        res.json({
-            error: "El usuario no proporciono todos los datos"
-        })
+      res.json({
+        error: `${error.message}`,
+      });
     }
+  }
 });
 
-router.patch('/user/:id',auth.validateFormatUpdate, async (req, res) => {
-    const user = req.body;
-    const Id = req.params.id
-    if (user.email) {
-        const resultemail = await actions.Update(`UPDATE usuarios SET email = :email WHERE id = ${Id}`, { email: user.email });
-    }
-    if (user.nombreCompleto) {
-        const resultNombreCompleto = await actions.Update(`UPDATE usuarios SET  nombreCompleto = :nombreCompleto WHERE id = ${Id}`, { nombreCompleto: user.nombreCompleto });
-    }
-    if (user.telefono) {
-        const resultTelefono = await actions.Update(`UPDATE usuarios SET  telefono = :telefono WHERE id = ${Id}`, { telefono: user.telefono });
-    }
-    if (user.direccion) {
-        const resultDireccion = await actions.Update(`UPDATE usuarios SET direccion = :direccion WHERE id = ${Id}`, { direccion: user.direccion });
-    }
-    if (user.contrasena) {
-        const resultContrasena = await actions.Update(`UPDATE usuarios SET contrasena = :contrasena WHERE id = ${Id}`, { contrasena: user.contrasena });
-    }
-    res.json(" correctly updated");
-});
-
-router.delete('/user/:id', auth.authAdmin, async (req, res) => {
+router.put("/user/:id", async (req, res) => {
+  const user = req.body;
+  const exists = await actions.Select("SELECT * FROM usuarios WHERE id = :id", {
+    id: req.params.id,
+  });
+  console.log(exists);
+  const Id = req.params.id;
+  if (exists.length === 0) {
+    res.status(404).json({ success: false, message: "User not found" });
+  } else {
     try {
-        const result = await actions.Delete('DELETE FROM usuarios WHERE id=:id', { id: req.params.id })
-        console.log("Delete result:", result);
-        if(result===undefined){
-            res.status(505).json({success: false, msg: "USER_NOT_FOUND"});
-        } else {
-            res.status(202).json({success: true, msg: "User has been deleted"});
+      const result = await actions.Update(
+        `UPDATE usuarios SET email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion = :direccion, contrasena = :contrasena  WHERE id = ${Id}`,
+        user
+      );
+      res
+        .status(200)
+        .json({ success: true, message: "product has been updated" });
+    } catch (error) {
+      res.json({
+        error: `${error.message}`,
+      });
+    }
+  }
+});
+
+router.patch("/user/:id", auth.validateFormatUpdate, async (req, res) => {
+  const user = req.body;
+  const Id = req.params.id;
+  const exists = await actions.Select("SELECT * FROM usuarios WHERE id = :id", {
+    id: req.params.id,
+  });
+  if (exists.length === 0) {
+    res.status(404).json({ success: false, message: "User not found" });
+  } else {
+    try {
+      const userEmail = user.email ? user.email : exists[0].email;
+      const userNombre = user.nombreCompleto
+        ? user.nombreCompleto
+        : exists[0].nombreCompleto;
+      const userTelefono = user.telefono ? user.telefono : exists[0].telefono;
+      const userDireccion = user.direccion
+        ? user.direccion
+        : exists[0].direccion;
+      const userContrasena = user.contrasena
+        ? user.contrasena
+        : exists[0].contrasena;
+      console.log(userEmail);
+      const update = await actions.Update(
+        `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
+        {
+          email: userEmail,
+          nombreCompleto: userNombre,
+          telefono: userTelefono,
+          direccion: userDireccion,
+          contrasena: userContrasena,
         }
+      );
+      res
+        .status(200)
+        .json({ success: true, message: "product has been updated" });
     } catch (error) {
-        res.status(505).json({success: false, msg: error.message});
+      res.json({
+        error: `${error.message}`,
+      });
     }
+  }
+});
+
+// router.delete('/user/:id', auth.authAdmin, async (req, res) => {
+//     try {
+//         const result = await actions.Delete('DELETE FROM usuarios WHERE id=:id', { id: req.params.id })
+//         console.log("Delete result:", result);
+//         if(result===undefined){
+//             res.status(505).json({success: false, msg: "USER_NOT_FOUND"});
+//         } else {
+//             res.status(202).json({success: true, msg: "User has been deleted"});
+//         }
+//     } catch (error) {
+//         res.status(505).json({success: false, msg: error.message});
+//     }
+// });
+
+router.delete("/user/:id", auth.authAdmin, async (req, res) => {
+  const exists = await actions.Select("SELECT * FROM usuarios WHERE id = :id", {
+    id: req.params.id,
+  });
+  if (exists.length === 0) {
+    res.status(404).json({ success: false, message: "user not found" });
+  } else {
+    try {
+      const result = await actions.Delete(
+        "DELETE FROM usuarios WHERE id = :id",
+        { id: req.params.id }
+      );
+      res
+        .status(200)
+        .json({
+          success: true,
+          message: "user has been deleted",
+          data: result,
+        });
+    } catch (error) {
+      error: `${error.message}`;
+    }
+  }
 });
 
 module.exports = router;
