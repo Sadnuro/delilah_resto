@@ -12,41 +12,49 @@ module.exports.validateToken = async (req, res, next) => {
      * Inserta en el body:
      * 
      */
-    const token = req.headers.authorization.split(' ')[1];
-    const verifyedToken = jwt.verify(token, firma);
-    try {
-        const existUser = await actions.Select(`SELECT id, idRole FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}"`);
-        if(existUser.length>0){
-            req.body.ids = existUser[0];
-            return next();
-        } else {
-            res.json({success: false, msg: "Not found user"})
-        }   
-    } catch (error) {
-        console.log(error);
-        res.send({success: false, msg: error.message});
+    if (req.headers.authorization!=undefined){
+        const token = req.headers.authorization.split(' ')[1];
+        const verifyedToken = jwt.verify(token, firma);
+        try {
+            const existUser = await actions.Select(`SELECT id, idRole FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}"`);
+            if(existUser.length>0){
+                req.body.ids = existUser[0];
+                return next();
+            } else {
+                res.status(500).json({success: false, msg: "Not found user"})
+            }   
+        } catch (error) {
+            console.log(error.message);
+            res.status(404).send({success: false, msg: error.message});
+        }
+    } else{
+        res.status(404).send({success: false, msg: 'No se proporcionó token de identificación'});
     }
 }
 
 // Utiliza es req.user creado en [auth.auth], de no existir se debería descifrar el token
 module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
-    const token = req.headers.authorization.split(' ')[1];
-    const verifyedToken = jwt.verify(token, firma);
-    try {
-        // Admin information | username unique
-        const isAdmin = await actions.Select(`SELECT * FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}" AND idRole=1`, {});
-        if(isAdmin.length>0){
-            return next();
-        }else {
+    if (req.headers.authorization!=undefined){
+        const token = req.headers.authorization.split(' ')[1];
+        const verifyedToken = jwt.verify(token, firma);
+        try {
+            // Admin information | username unique
+            const isAdmin = await actions.Select(`SELECT * FROM usuarios WHERE nombreUsuario="${verifyedToken.userName}" AND idRole=1`, {});
+            if(isAdmin.length>0){
+                return next();
+            }else {
+                res.json({
+                    error: "El usuario no tiene permisos para realizar esta acción"
+                })
+            }
+        } catch(error){
+            console.log({msj: error.message});
             res.json({
                 error: "El usuario no tiene permisos para realizar esta acción"
             })
         }
-    } catch(error){
-        console.log({msj: error.message});
-        res.json({
-            error: "El usuario no tiene permisos para realizar esta acción"
-        })
+    }else {
+        res.status(404).send({success: false, msg: 'No se proporcionó token de identificación'});
     }
 }
 
@@ -176,7 +184,7 @@ module.exports.validateFormatUpdateOrder = async (req, res, next) => {
     // }
 
     // Validate nombre
-    if(body.nombre!=undefined && !/(^[A-Za-z]{3,16})([ ]{0,1})([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})?([ ]{0,1})?([A-Za-z]{3,16})*$/.test(body.nombre)){
+    if(body.nombre!=undefined && !/[A-Za-z0-9,]+/.test(body.nombre)){
         status = false;
         result.nombre = "INCORRECT_FORMAT";
     }

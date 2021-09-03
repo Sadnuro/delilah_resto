@@ -50,14 +50,19 @@ router.get('/order/:id', auth.validateToken, async (req, res)=> {// Admin | User
             IdUser: req.body.ids.id,
             idOrden: req.params.id
         }
-        const order = await actions.Select(`SELECT * FROM ordenes WHERE id=:idOrden AND IdUser=:IdUser`, data);
+        let order = 0;
+        if (req.body.ids.idRole==1){
+            order = await actions.Select(`SELECT * FROM ordenes WHERE id=:idOrden`, data);
+        } else {
+            order = await actions.Select(`SELECT * FROM ordenes WHERE id=:idOrden AND IdUser=:IdUser`, data);
+        }
         console.log("data:", data)
         console.log("order:", order)
 
         if(order.length>0){
             res.status(202).send({success: true, msg: 'FOUND_DATA', data: order});
         } else {
-            res.status(500).send({success: true, msg: 'NOT_FOUND_DATA'});
+            res.status(500).send({success: false, msg: 'NOT_FOUND_DATA'});
         }
 
     } catch (error) {
@@ -139,6 +144,7 @@ router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (
         //     console.log("resultIdUserUpdate:", resultIdUserUpdate);
         //     resultIdUserUpdate[1]>0 ? updated.IdUser = order.IdUser : updated=updated;
         // }
+
         if (order.nombre){
             const resultNombreUpdate = await actions.Update(`UPDATE ordenes SET nombre=:nombre WHERE id=${Id}`, order);
             resultNombreUpdate[1]>0 ?  updated.nombre = order.nombre : updated=updated;
@@ -158,7 +164,7 @@ router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (
         }
 
         // Implement whether foreign keys should be modified
-        // const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
+        const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
 
         res.json({success: true, msg: 'ORDER_UPDATED', updated: updated});
     } catch (error) {
@@ -169,24 +175,20 @@ router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (
 
 router.delete('/order/:id', auth.authAdmin, async (req, res)=> { // Admin
     try{
-        console.log("req.params.id:", req.params.id)
-
         counterQuery = `SELECT COUNT(*) as count FROM ordenes WHERE id=:id`
         
         // deleted = COUNT(*)[] | deleted[0].count = n
-        const deleted = await actions.Select(counterQuery, {id: req.params.id});
+        const toDelete = await actions.Select(counterQuery, {id: req.params.id});
+        console.log("count users:", toDelete[0]);
+        if (toDelete[0].count>0){
+            const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
+            const respuesta = await actions.Delete(`
+            DELETE ordenes, detallesordenes
+            FROM ordenes INNER JOIN detallesordenes
+            ON ordenes.id=:id AND detallesordenes.idOrden=:id`, {id: req.params.id});
+            const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
 
-        const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
-
-        const respuesta = await actions.Delete(`
-        DELETE ordenes, detallesordenes
-        FROM ordenes INNER JOIN detallesordenes
-        ON ordenes.id=:id AND detallesordenes.idOrden=:id`, {id: req.params.id});
-
-        const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
-
-        if (deleted[0].count>0){
-            dataResponse = {success: true, msg: 'Order has been deleted', deleted: deleted[0].count};
+            dataResponse = {success: true, msg: 'Order has been deleted', deleted: toDelete[0].count};
             console.log(dataResponse)
             res.status(200).json(dataResponse);
         } else {
