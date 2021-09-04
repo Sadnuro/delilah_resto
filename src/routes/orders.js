@@ -27,7 +27,7 @@ router.get('/orders', auth.validateToken,  async (req, res)=> {
         }
         
         if (orders.length>0){
-            dataResponse = {success: true, msg: 'FOUND_DATA', count: orders.length, data: orders};
+            dataResponse = {success: true, msg: 'FOUND_DATA', quantity: orders.length, data: orders};
             res.status(202).send(dataResponse);
         } else {
             res.status(202).send({success: true, msg: 'NOT_FOUND_DATA'});
@@ -60,7 +60,7 @@ router.get('/order/:id', auth.validateToken, async (req, res)=> {// Admin | User
         console.log("order:", order)
 
         if(order.length>0){
-            res.status(202).send({success: true, msg: 'FOUND_DATA', data: order});
+            res.status(202).send({success: true, quantity: order.length, msg: 'FOUND_DATA', data: order});
         } else {
             res.status(500).send({success: false, msg: 'NOT_FOUND_DATA'});
         }

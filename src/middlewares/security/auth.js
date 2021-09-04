@@ -105,6 +105,62 @@ module.exports.validateFormat = (req, res, next) => {
     }
 }
 
+module.exports.validateFormatProduct = (req, res, next) => {
+    const body = req.body;
+    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var status = true;
+
+    // Validate nombre de producto
+    if (body.nombre==undefined || !/^[a-zA-Z\ ]+$/.test(body.nombre)){
+        status = false;
+        result.nombre = "INCORRECT_FORMAT"
+    }
+    // Validate valor de producto
+    if (body.valor==undefined || !/^\d+$/.test(body.valor)){
+        status = false;
+        result.valor = "INCORRECT_FORMAT"
+    } 
+    // Validate address
+    if (body.foto==undefined || !/^[a-zA-Z]+$/.test(body.foto)){
+        status = false;
+        result.foto = "INCORRECT_FORMAT"
+    }
+
+    if (status===true){
+        next()
+    } else {
+        console.log(result)
+        res.status(404).send(result);
+    }
+}
+module.exports.validateFormatProductUpdate = (req, res, next) => {
+    const body = req.body;
+    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var status = true;
+
+    // Validate nombre de producto
+    if (body.nombre!=undefined && !/^[a-zA-Z\ ]+$/.test(body.nombre)){
+        status = false;
+        result.nombre = "INCORRECT_FORMAT"
+    }
+    // Validate valor de producto
+    if (body.valor!=undefined && !/^\d+$/.test(body.valor)){
+        status = false;
+        result.valor = "INCORRECT_FORMAT"
+    } 
+    // Validate address
+    if (body.foto!=undefined && !/^[a-zA-Z]+$/.test(body.foto)){
+        status = false;
+        result.foto = "INCORRECT_FORMAT"
+    }
+
+    if (status===true){
+        next()
+    } else {
+        console.log(result)
+        res.status(404).send(result);
+    }
+}
 
 module.exports.validateFormatUpdate = (req, res, next) => {
 

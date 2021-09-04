@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/users", auth.authAdmin, async (req, res) => {
   try {
     const result = await actions.Select("SELECT * FROM usuarios", {});
-    res.status(200).json({ success: true, count: result.length, data: result });
+    res.status(200).json({ success: true, quantity: result.length, data: result });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
@@ -36,7 +36,7 @@ router.get("/user/:id", auth.validateToken, async (req, res) => {
       res.status(404).json({success: false, msg: "The user not has permisions for carry this action"});
     }
     else if (result.length > 0) {
-      res.status(200).json({ success: true, msg: "FOUND_USER", count: result.length, data: result });
+      res.status(200).json({ success: true, msg: "FOUND_USER", quantity: result.length, data: result });
     } else {
       res.status(404).json({ success: false, msg: "NOT_FOUND_USER" });
     }
