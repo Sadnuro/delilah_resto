@@ -3,65 +3,59 @@ const router = express.Router();
 const actions = require("../database/actions");
 const auth = require("../middlewares/security/auth");
 
-router.get("/products", async (req, res) => {
+router.get("/products",auth.validateToken, async (req, res) => {
   try {
     const result = await actions.Select("SELECT * FROM productos", {});
-    res.status(200).json({ success: true, data: result });
+    res.status(200).json({ success: true, quantity: result.length, data: result });
   } catch (error) {
-    res.json({ success: false, message: error });
+    res.status(505).json({ success: false, message: error.message });
   }
 });
 
-router.get("/product/:id", async (req, res) => {
+router.get("/product/:id", auth.validateToken, async (req, res) => {
   try {
     const result = await actions.Select(
       "SELECT * FROM productos WHERE id = :id",
       { id: req.params.id }
     );
     if (result.length === 0) {
-      res.status(404).json({ success: false, message: "product not found" });
+      res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
     } else {
-      res.status(200).json({ success: true, data: result });
+      res.status(200).json({ success: true, quantity: result.length, data: result });
     }
   } catch (error) {
-    res.json({
-      error: `${error.message}`,
-    });
+    res.status(500).json({ success: false, msg: error.message });
   }
 });
 
 // Verifica si datos únicos ya están registrados
-router.post("/product", async (req, res) => {
+router.post("/product", auth.authAdmin, auth.validateFormatProduct, async (req, res) => {
   const product = req.body;
   product.nombreUsuario = product.nombre.toLowerCase();
-  const existsID = await actions.Select(
-    "SELECT * FROM productos WHERE id = :id ",
-    { id: req.body.id }
-  );
+  // const existsID = await actions.Select(   //ID Autogenerado por la database | AutoIncremental
+  //   "SELECT * FROM productos WHERE id = :id ",
+  //   { id: req.body.id }
+  // );
   const existsNombre = await actions.Select(
     "SELECT * FROM productos WHERE nombre = :nombre",
     { nombre: req.body.nombre }
   );
   console.log(existsNombre);
-  if (existsID.length > 0 || existsNombre.length > 0) {
-    res.status(404).json({ success: false, message: "product exists already" });
+  if (existsNombre.length > 0) {
+    res.status(404).json({ success: false, message: "PRODUCT_ALREADY_EXIST" });
   } else {
     try {
       const result = await actions.Insert(
-        `INSERT INTO productos (id, nombre, valor, foto) 
-            VALUES (:id, :nombre, :valor, :foto)`,
-        product
-      );
-      res
-        .status(201)
-        .json({ success: true, message: "product has been created" });
+        `INSERT INTO productos (nombre, valor, foto) VALUES (:nombre, :valor, :foto)`,
+        product);
+      res.status(201).json({ success: true, message: "product has been created", result: result});
     } catch (error) {
-      error: `${error.message}`;
+      res.status(505).json({success: false, msg: error.message});
     }
   }
 });
 
-router.put("/product/:id", async (req, res) => {
+router.put("/product/:id", auth.authAdmin, auth.validateFormatProduct, async (req, res) => {
   // Actualizar todo el producto
   const product = req.body;
   const exists = await actions.Select(
@@ -70,25 +64,20 @@ router.put("/product/:id", async (req, res) => {
   );
   const Id = req.params.id;
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "User not found" });
+    res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
   } else {
     try {
       const result = await actions.Update(
-        `UPDATE productos SET id = :id, nombre = :nombre, valor = :valor, foto = :foto  WHERE id = ${Id}`,
-        product
-      );
-      res
-        .status(200)
-        .json({ success: true, message: "product has been updated" });
+        `UPDATE productos SET nombre =:nombre, valor =:valor, foto =:foto  WHERE id = ${Id}`,
+        product);
+      res.status(200).json({ success: true, message: "product has been updated" });
     } catch (error) {
-      res.json({
-        error: `${error.message}`,
-      });
+      res.json({error: `${error.message}`});
     }
   }
 });
 
-router.patch("/product/:id", async (req, res) => {
+router.patch("/product/:id", auth.authAdmin, auth.validateFormatProductUpdate, async (req, res) => {
   // Actualizar solo una propiedad del producto
   const product = req.body;
   const Id = req.params.id;
@@ -97,7 +86,7 @@ router.patch("/product/:id", async (req, res) => {
     { id: req.params.id }
   );
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "User not found" });
+    res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
   } else {
     try {
       const productId = product.id ? product.id : exists[0].id;
@@ -113,37 +102,28 @@ router.patch("/product/:id", async (req, res) => {
           foto: productFoto,
         }
       );
-      res
-        .status(200)
-        .json({ success: true, message: "product has been updated" });
+      res.status(200).json({ success: true, message: "product has been updated" });
     } catch (error) {
-      res.json({
-        error: `${error.message}`,
-      });
+      res.status(500).json({success: false, msg: error.message});
     }
   }
 });
 
-router.delete("/product/:id", async (req, res) => {
+router.delete("/product/:id", auth.authAdmin, async (req, res) => {
   const exists = await actions.Select(
     "SELECT * FROM productos WHERE id = :id",
     { id: req.params.id }
   );
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "product not found" });
+    res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
   } else {
     try {
       const result = await actions.Delete(
-        "DELETE FROM productos WHERE id = :id",
-        { id: req.params.id }
-      );
-      res.status(200).json({
-        success: true,
-        message: "product has been deleted",
-        data: result,
-      });
+        "DELETE FROM productos WHERE id = :id", { id: req.params.id } );
+
+      res.status(200).json({ success: true, message: "product has been deleted", quantity: exists[0], data: result });
     } catch (error) {
-      error: `${error.message}`;
+      res.status(500).json({success: false, msg: error.message});
     }
   }
 });
