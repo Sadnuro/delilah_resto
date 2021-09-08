@@ -74,7 +74,11 @@ router.post('/order', auth.validateToken, async (req, res)=> { // User
     const reqComplete = req.body
     console.log("post order: ", req.body)
 
-    const orderInfo = reqComplete.order;
+    const orderInfo = {
+        tipoPago: reqComplete.order.tipoPago,
+        IdUser: reqComplete.ids.id,
+        estado: 1
+    }
     const detallesOrderInfo = reqComplete.detalleOrder;
 
     let resultOrderInsert;
@@ -90,11 +94,13 @@ router.post('/order', auth.validateToken, async (req, res)=> { // User
         console.log("resultOrderInsert", resultOrderInsert);
     
         idOrden = resultOrderInsert[0];
+        console.log("idOrden:", idOrden);
     
         for (const detalleOrderInfo of detallesOrderInfo) {
             resultInsertDetails = await actions.Insert(`INSERT INTO detallesordenes  
             (idOrden, idProducto, cant) 
             VALUES (:idOrden, :idProducto, :cant)`, { idOrden, ...detalleOrderInfo});
+
             console.log("resultInsertDetails", resultInsertDetails);
         }
     
@@ -102,26 +108,82 @@ router.post('/order', auth.validateToken, async (req, res)=> { // User
         SELECT SUM(p.valor * do.cant) as total,
         GROUP_CONCAT(do.cant, "x ", p.nombre, " ") as name
         FROM detallesordenes do
-        INNER JOIN producto p ON (p.id = do.idProducto)
+        INNER JOIN productos p ON (p.id = do.idProducto)
         WHERE do.idOrden = :idOrden`, { idOrden });
+
         console.log("resultQueryName", resultQueryName);
     
         resultOrderUpdate = await actions.Update(`UPDATE ordenes 
         SET nombre = :nombre, total = :total WHERE id = :idOrden`, { idOrden, nombre: resultQueryName[0].name, total: resultQueryName[0].total });
         console.log("resultOrderUpdate", resultOrderUpdate);
         
+        if(resultOrderUpdate.error) {
+            res.status(500).json(resultOrderUpdate.message);
+        } else {
+            res.json(resultOrderUpdate);
+        } 
+        
     } catch (error){
-        res.status(404).send({});
+        res.status(404).send({success: false, msg: error.message});
     }
-
-    if(resultOrderUpdate.error) {
-        res.status(500).json(resultOrderUpdate.message);
-    } else {
-        res.json(resultOrderUpdate);
-    }    
+   
 });
 
 router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (req, res)=> { // Admin
+    //Update status order by admin
+    try {
+        const order = req.body;
+        const Id = req.params.id
+        console.log("order:", order)
+
+        updated = {};
+        
+        // Implement whether foreign keys should be modified
+        // const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
+
+        // if (order.id){
+        //     const resultIdUpdate = await actions.Update(`UPDATE ordenes SET id=:id WHERE id=${Id}`, order);
+        //     resultIdUpdate[1]>0 ? updated.id = order.id : updated=update;
+        // }
+
+        
+        // if (order.IdUser){
+        //     const resultIdUserUpdate = await actions.Update(`UPDATE ordenes SET IdUser=:IdUser  WHERE id=${Id}`, order);
+        //     console.log("resultIdUserUpdate:", resultIdUserUpdate);
+        //     resultIdUserUpdate[1]>0 ? updated.IdUser = order.IdUser : updated=updated;
+        // }
+
+        if (order.nombre){
+            const resultNombreUpdate = await actions.Update(`UPDATE ordenes SET nombre=:nombre WHERE id=${Id}`, order);
+            resultNombreUpdate[1]>0 ?  updated.nombre = order.nombre : updated=updated;
+        }
+        if (order.total){
+            const resultTotalUpdate = await actions.Update(`UPDATE ordenes SET total=:total WHERE id=${Id}`, order);
+            resultTotalUpdate[1]>0 ?  updated.total = order.total : updated=updated;
+        }
+        if (order.tipoPago){
+            const resultTipoPagoUpdate = await actions.Update(`UPDATE ordenes SET tipoPago=:tipoPago WHERE id=${Id}`, order);
+            resultTipoPagoUpdate[1]>0 ?  updated.tipoPago = order.tipoPago : updated=updated;
+            console.log("resultTipoPagoUpdate:", resultTipoPagoUpdate);
+        }
+        if (order.estado){
+            const resultEstadoUpdate = await actions.Update(`UPDATE ordenes SET estado=:estado WHERE id=${Id}`, order);
+            resultEstadoUpdate[1]>0 ?  updated.estado = order.estado : updated=updated;
+        }
+
+        // Implement whether foreign keys should be modified
+        const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
+
+        res.json({success: true, msg: 'ORDER_UPDATED', updated: updated});
+    } catch (error) {
+        console.log({ msj: error.message });
+        res.json({success: false, msg: error.message})
+    }
+});
+
+// Agregar path
+
+router.patch('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (req, res)=> { // Admin
     //Update status order by admin
     try {
         const order = req.body;

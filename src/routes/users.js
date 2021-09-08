@@ -173,7 +173,7 @@ router.delete("/user/:id", auth.authAdmin, async (req, res) => {
       res.status(404).json({success: false, msg:error.message});
     }
   }
-
+});
 router.get('/users', auth.authAdmin, async (req, res) => {
     const result = await actions.Select('SELECT * FROM usuarios', {});
     res.json(result);
@@ -213,8 +213,6 @@ router.put('/user/:id', async (req, res) => {
             error: "El usuario no proporciono todos los datos"
         })
     }
-
-
 });
 
 router.patch('/user/:id', async (req, res) => {
@@ -236,7 +234,6 @@ router.patch('/user/:id', async (req, res) => {
         const resultContrasena = await actions.Update(`UPDATE usuarios SET contrasena = :contrasena WHERE id = ${Id}`, { contrasena: user.contrasena });
     }
     res.json(" correctly updated");
-
 });
 
 router.delete('/user/:id', async (req, res) => {
