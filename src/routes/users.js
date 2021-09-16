@@ -37,10 +37,6 @@ router.post("/user", async (req, res) => {
   const user = req.body;
   user.nombreUsuario = user.nombreUsuario.toLowerCase();
   console.log(user.nombreUsuario);
-  const existsID = await actions.Select(
-    "SELECT * FROM usuarios WHERE id = :id ",
-    { id: user.id }
-  );
   const existsNombre = await actions.Select(
     "SELECT * FROM usuarios WHERE nombreUsuario = :nombreUsuario",
     { nombreUsuario: user.nombreUsuario }
@@ -144,13 +140,11 @@ router.delete("/user/:id", async (req, res) => {
         "DELETE FROM usuarios WHERE id = :id",
         { id: req.params.id }
       );
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "user has been deleted",
-          data: result,
-        });
+      res.status(200).json({
+        success: true,
+        message: "user has been deleted",
+        data: result,
+      });
     } catch (error) {
       error: `${error.message}`;
     }
