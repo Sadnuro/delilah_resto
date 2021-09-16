@@ -22,7 +22,7 @@ module.exports.validateToken = async (req, res, next) => {
                 return next();
             } else {
                 // 400 NOT_FOUND
-                res.status(500).json({success: false, msg: "Not found user"})
+                res.status(500).json({success: false, msg: "NOT_FOUND_USER"})
             }   
         } catch (error) {
             console.log(error.message);

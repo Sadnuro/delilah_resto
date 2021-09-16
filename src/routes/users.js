@@ -7,11 +7,10 @@ const router = express.Router();
 router.get("/users", auth.authAdmin, async (req, res) => {
   try {
     const result = await actions.Select("SELECT * FROM usuarios", {});
-    res
-      .status(200)
+    res.status(200)
       .json({ success: true, quantity: result.length, data: result });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.status(404).json({ success: false, msg: error.message });
   }
 });
 
@@ -33,27 +32,19 @@ router.get("/user/:id", auth.validateToken, async (req, res) => {
     }
 
     if (deniedService == true) {
-      res
-        .status(400)
-        .json({
+      res.status(400).json({
           success: false,
-          msg: "The user has not permissions to carry out this action",
-        });
+          msg: "The user has not permissions to carry out this action" });
     } else if (result.length > 0) {
-      res
-        .status(200)
-        .json({
-          success: true,
-          msg: "FOUND_USER",
+      res.status(200).json({ success: true, msg: "FOUND_USER",
           quantity: result.length,
-          data: result,
-        });
+          data: result });
     } else {
       // 500 NOT_FOUND
       res.status(500).json({ success: false, msg: "NOT_FOUND_USER" });
     }
   } catch (error) {
-    res.status(404).json({ success: false, error: `${error.message}` });
+    res.status(404).json({ success: false, msg: `${error.message}` });
   }
 });
 
@@ -88,11 +79,7 @@ router.post(
 );
 
 // PUT | Se usa para modificar todos los valores del usuario excepto el [id]
-router.put(
-  "/user/:id",
-  auth.authAdmin,
-  auth.validateFormat,
-  async (req, res) => {
+router.put("/user/:id", auth.authAdmin, auth.validateFormat, async (req, res) => {
     const user = req.body;
     const exists = await actions.Select(
       "SELECT * FROM usuarios WHERE id = :id",
@@ -103,27 +90,23 @@ router.put(
     console.log(exists);
     const Id = req.params.id;
     if (exists.length === 0) {
-      res.status(500).json({ success: false, message: "NOT_FOUND_USER" });
+      res.status(500).json({ success: false, msg: "NOT_FOUND_USER" });
     } else {
       try {
         const result = await actions.Update(
           `UPDATE usuarios SET email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion = :direccion, contrasena = :contrasena  WHERE id = ${Id}`,
           user
         );
-        res
-          .status(200)
-          .json({ success: true, message: "user has been updated" });
+        res.status(200).json({ success: true, msg: "UPDATED_USER" });
       } catch (error) {
-        res.status(404).json({
-          error: `${error.message}`,
-        });
+        res.status(404).json({ success: false, msg: `${error.message}` });
       }
     }
   }
 );
 
 // PATCH | Actualiza cualquier parámetro
-router.patch("/user/:id", auth.validateFormatUpdate, async (req, res) => {
+router.patch("/user/:id", auth.validateToken, auth.validateFormatUpdate, async (req, res) => {
   const user = req.body;
   const Id = req.params.id;
   const exists = await actions.Select("SELECT * FROM usuarios WHERE id = :id", {
@@ -145,20 +128,48 @@ router.patch("/user/:id", auth.validateFormatUpdate, async (req, res) => {
         ? user.contrasena
         : exists[0].contrasena;
       console.log(userEmail);
-      const update = await actions.Update(
-        `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
-        {
-          email: userEmail,
-          nombreCompleto: userNombre,
-          telefono: userTelefono,
-          direccion: userDireccion,
-          contrasena: userContrasena,
-        }
-      );
-      res.status(200).json({ success: true, message: "user has been updated" });
+
+      var update;
+      var deniedService = false;
+      if(req.body.ids.idRole==1){
+        update = await actions.Update(
+          `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
+          {
+            email: userEmail,
+            nombreCompleto: userNombre,
+            telefono: userTelefono,
+            direccion: userDireccion,
+            contrasena: userContrasena,
+          }
+        );
+      } else if (req.body.ids.id == req.params.id){
+        update = await actions.Update(
+          `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
+          {
+            email: userEmail,
+            nombreCompleto: userNombre,
+            telefono: userTelefono,
+            direccion: userDireccion,
+            contrasena: userContrasena,
+          }
+        );
+      } else {
+        deniedService = true;
+      }
+
+      if (deniedService == true) {
+        res.status(400).json({
+            success: false,
+            msg: "The user has not permissions to carry out this action" });
+      } else if (update.length > 0) {
+        res.status(200).json({ success: true, msg: "UPDATE_USER" });
+      } else {
+        // 500 NOT_FOUND
+        res.status(500).json({ success: false, msg: "NOT_FOUND_USER" });
+      }
+
     } catch (error) {
-      res.status(404).json({
-        error: `${error.message}`,
+      res.status(404).json({ success: false, msg: `${error.message}`,
       });
     }
   }
