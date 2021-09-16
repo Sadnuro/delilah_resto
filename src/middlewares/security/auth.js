@@ -61,7 +61,7 @@ module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
 
 module.exports.validateFormat = (req, res, next) => {
     const body = req.body;
-    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var result = {success: false, msg: "INCORRECT_FORMAT"};
     var status = true;
 
     // Validate username
@@ -107,7 +107,7 @@ module.exports.validateFormat = (req, res, next) => {
 
 module.exports.validateFormatProduct = (req, res, next) => {
     const body = req.body;
-    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var result = {success: false, msg: "INCORRECT_FORMAT"};
     var status = true;
 
     // Validate nombre de producto
@@ -135,7 +135,7 @@ module.exports.validateFormatProduct = (req, res, next) => {
 }
 module.exports.validateFormatProductUpdate = (req, res, next) => {
     const body = req.body;
-    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var result = {success: false, msg: "INCORRECT_FORMAT"};
     var status = true;
 
     // Validate nombre de producto
@@ -172,7 +172,7 @@ module.exports.validateFormatUpdate = (req, res, next) => {
      * 
      */
      const body = req.body;
-     var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+     var result = {success: false, msg: "INCORRECT_FORMAT"};
      var status = true;
  
      // Validate username
@@ -224,7 +224,7 @@ module.exports.validateFormatUpdateOrder = async (req, res, next) => {
      * 
      */
     const body = req.body;
-    var result = {success: "ERROR", message: "INCORRECT_FORMAT"};
+    var result = {success: false, msg: "INCORRECT_FORMAT"};
     var status = true;
 
     // Validate id | NOT UPDATE, IS FOREIGN KEY OF [DETALLESORDENES]
@@ -284,11 +284,11 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
 
         console.log("users id with username: ", usernameUsed)
         console.log("users id with email: ", emailUsed)
-        var result = {success: "SUCCESS", message: ""};
+        var result = {success: true, msg: ""};
 
         if (usernameUsed.length>0 || emailUsed.length>0){   // Validacion de datos en uso
-            result.success = "ERROR";
-            result.message = "DATA_IN_USE"
+            result.success = false;
+            result.msg = "DATA_IN_USE"
             usernameUsed.length>0 ? result.username="NOT_AVAILABLE" : "AVAILABLE";
             emailUsed.length>0 ? result.email="NOT_AVAILABLE" : "AVAILABLE";
             console.log(result)
@@ -299,7 +299,7 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
 
     } catch (error) {   // Error en la validación de datos
         res.json({
-            success: "ERROR",
+            success: false,
             msj: error.message,
             codeError: 01
         });
