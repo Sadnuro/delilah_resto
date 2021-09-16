@@ -37,7 +37,7 @@ router.get("/user/:id", auth.validateToken, async (req, res) => {
         .status(404)
         .json({
           success: false,
-          msg: "The user not has permisions for carry this action",
+          msg: "The user has not permissions to carry out this action",
         });
     } else if (result.length > 0) {
       res

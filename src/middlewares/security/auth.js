@@ -44,13 +44,13 @@ module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
                 return next();
             }else {
                 res.json({
-                    error: "El usuario no tiene permisos para realizar esta acción"
+                    error: "The user has not permissions to carry out this action"
                 })
             }
         } catch(error){
             console.log({msj: error.message});
             res.json({
-                error: "El usuario no tiene permisos para realizar esta acción"
+                error: "The user has not permissions to carry out this action"
             })
         }
     }else {
