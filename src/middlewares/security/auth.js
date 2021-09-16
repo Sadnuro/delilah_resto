@@ -289,7 +289,7 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
         if (usernameUsed.length>0 || emailUsed.length>0){   // Validacion de datos en uso
             result.success = false;
             result.msg = "DATA_IN_USE"
-            usernameUsed.length>0 ? result.username="NOT_AVAILABLE" : "AVAILABLE";
+            usernameUsed.length>0 ? result.nombreUsuario="NOT_AVAILABLE" : "AVAILABLE";
             emailUsed.length>0 ? result.email="NOT_AVAILABLE" : "AVAILABLE";
             console.log(result)
             res.status(404).send(result); // Finaliza petición

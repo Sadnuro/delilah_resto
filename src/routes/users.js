@@ -60,7 +60,7 @@ router.post('/user', auth.validateFormat, auth.validateUser, async (req, res) =>
     if (result.error) {
       es.status(500).json({success: false, msg: result.message});
     } else {
-      res.status(200).json({success: true, result: result});
+      res.status(200).json({success: true, msg: "CREATED_USER"});
     }
   }catch(error){
     res.status(500).json({success: false, msg: error.message});
