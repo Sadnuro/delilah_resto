@@ -1,11 +1,16 @@
 const Sequelize = require('sequelize');
-const database = new Sequelize('mysql://root:kaiser1994@localhost:3306/deliahresto');
+const database = new Sequelize('mysql://root:12345@localhost:3306/delilahresto');
 
 module.exports.Select = async (query, data = {}) => {
     return await database.query(query, {
         replacements: data,
         type: database.QueryTypes.SELECT
     });
+}
+
+module.exports.query = async (query) =>{
+    // const options = {raw: true, transaction: t};
+    return await database.query(query)
 }
 
 module.exports.Insert = async (query, data = {}) => {
