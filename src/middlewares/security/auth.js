@@ -21,13 +21,16 @@ module.exports.validateToken = async (req, res, next) => {
                 req.body.ids = existUser[0];
                 return next();
             } else {
+                // 400 NOT_FOUND
                 res.status(500).json({success: false, msg: "Not found user"})
             }   
         } catch (error) {
             console.log(error.message);
+            // 404 GENERAL_ERROR
             res.status(404).send({success: false, msg: error.message});
         }
     } else{
+        // 404 GENERAL_ERROR
         res.status(404).send({success: false, msg: 'No se proporcionó token de identificación'});
     }
 }
@@ -43,17 +46,20 @@ module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
             if(isAdmin.length>0){
                 return next();
             }else {
-                res.json({
+                // 400 NOT_PERMISIONS
+                res.status(400).json({ 
                     error: "The user has not permissions to carry out this action"
                 })
             }
         } catch(error){
             console.log({msj: error.message});
-            res.json({
+            // 400 NOT_PERMISIONS
+            res.status(400).json({
                 error: "The user has not permissions to carry out this action"
             })
         }
     }else {
+        // 404 GENERAL_ERROR
         res.status(404).send({success: false, msg: 'No se proporcionó token de identificación'});
     }
 }
@@ -101,7 +107,7 @@ module.exports.validateFormat = (req, res, next) => {
         next()
     } else {
         console.log(result)
-        res.status(404).send(result);
+        res.status(405).send(result); // 405 INCORRECT_FORMAT
     }
 }
 
@@ -130,7 +136,8 @@ module.exports.validateFormatProduct = (req, res, next) => {
         next()
     } else {
         console.log(result)
-        res.status(404).send(result);
+        // 405 INCORRECT_FORMAT
+        res.status(405).send(result);
     }
 }
 module.exports.validateFormatProductUpdate = (req, res, next) => {
@@ -158,7 +165,8 @@ module.exports.validateFormatProductUpdate = (req, res, next) => {
         next()
     } else {
         console.log(result)
-        res.status(404).send(result);
+        // 405 INCORRECT_FORMAT
+        res.status(405).send(result);
     }
 }
 
@@ -210,7 +218,8 @@ module.exports.validateFormatUpdate = (req, res, next) => {
          next()
      } else {
          console.log(result)
-         res.status(404).send(result);
+         // 405 INCORRECT_FORMAT
+         res.status(405).send(result);
      }
 
 }
@@ -265,6 +274,7 @@ module.exports.validateFormatUpdateOrder = async (req, res, next) => {
         next()
     } else {
         console.log(result)
+        // 405 INCORRECT_FORMAT
         res.status(404).send(result);
     }
 }
@@ -292,7 +302,8 @@ module.exports.validateUser =async  (req, res, next) => { // Check exists in db
             usernameUsed.length>0 ? result.nombreUsuario="NOT_AVAILABLE" : "AVAILABLE";
             emailUsed.length>0 ? result.email="NOT_AVAILABLE" : "AVAILABLE";
             console.log(result)
-            res.status(404).send(result); // Finaliza petición
+            // 403 DATA_IN_USE
+            res.status(403).send(result); // Finaliza petición
         } else {
             next();
         }

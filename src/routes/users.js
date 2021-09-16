@@ -34,7 +34,7 @@ router.get("/user/:id", auth.validateToken, async (req, res) => {
 
     if (deniedService == true) {
       res
-        .status(404)
+        .status(400)
         .json({
           success: false,
           msg: "The user has not permissions to carry out this action",
@@ -49,7 +49,8 @@ router.get("/user/:id", auth.validateToken, async (req, res) => {
           data: result,
         });
     } else {
-      res.status(404).json({ success: false, msg: "NOT_FOUND_USER" });
+      // 500 NOT_FOUND
+      res.status(500).json({ success: false, msg: "NOT_FOUND_USER" });
     }
   } catch (error) {
     res.status(404).json({ success: false, error: `${error.message}` });
@@ -75,12 +76,13 @@ router.post(
         user
       );
       if (result.error) {
-        es.status(500).json({success: false, msg: result.message});
+        // 404 GENERAL_ERROR
+        es.status(404).json({success: false, msg: result.message});
       } else {
         res.status(200).json({success: true, msg: "CREATED_USER"});
         }
     } catch (error) {
-      res.status(500).json({ success: false, msg: error.message });
+      res.status(404).json({ success: false, msg: error.message });
     }
   }
 );
@@ -101,7 +103,7 @@ router.put(
     console.log(exists);
     const Id = req.params.id;
     if (exists.length === 0) {
-      res.status(404).json({ success: false, message: "User not found" });
+      res.status(500).json({ success: false, message: "NOT_FOUND_USER" });
     } else {
       try {
         const result = await actions.Update(
@@ -112,7 +114,7 @@ router.put(
           .status(200)
           .json({ success: true, message: "user has been updated" });
       } catch (error) {
-        res.json({
+        res.status(404).json({
           error: `${error.message}`,
         });
       }
@@ -128,7 +130,7 @@ router.patch("/user/:id", auth.validateFormatUpdate, async (req, res) => {
     id: req.params.id,
   });
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "User not found" });
+    res.status(500).json({ success: false, message: "NOT_FOUND_USER" });
   } else {
     try {
       const userEmail = user.email ? user.email : exists[0].email;
@@ -155,7 +157,7 @@ router.patch("/user/:id", auth.validateFormatUpdate, async (req, res) => {
       );
       res.status(200).json({ success: true, message: "user has been updated" });
     } catch (error) {
-      res.json({
+      res.status(404).json({
         error: `${error.message}`,
       });
     }
@@ -201,7 +203,7 @@ router.delete("/user/:id", auth.authAdmin, async (req, res) => {
     id: req.params.id,
   });
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "USER_NOT_FOUND" });
+    res.status(500).json({ success: false, message: "NOT_FOUND_USER" });
   } else {
     try {
       const resultDeleteOrders = await deleteOrdersOfUser(req.params.id);
