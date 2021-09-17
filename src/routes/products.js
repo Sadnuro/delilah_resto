@@ -21,7 +21,7 @@ router.get("/product/:id", auth.validateToken, async (req, res) => {
     if (result.length === 0) {
       res.status(500).json({ success: false, msg: "NOT_FOUND_PRODUCT" });
     } else {
-      res.status(200).json({ success: true, quantity: result.length, data: result });
+      res.status(200).json({ success: true, msg: "FOUND_PRODUCT", quantity: result.length, data: result });
     }
   } catch (error) {
     res.status(404).json({ success: false, msg: error.message });
@@ -42,7 +42,7 @@ router.post("/product", auth.authAdmin, auth.validateFormatProduct, async (req, 
   );
   console.log(existsNombre);
   if (existsNombre.length > 0) {
-    res.status(501).json({ success: false, msg: "PRODUCT_ALREADY_EXIST" });
+    res.status(500).json({ success: false, msg: "PRODUCT_ALREADY_EXIST" });
   } else {
     try {
       const result = await actions.Insert(
