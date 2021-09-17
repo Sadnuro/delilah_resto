@@ -8,7 +8,7 @@ router.get("/products", auth.validateToken, async (req, res) => {
     const result = await actions.Select("SELECT * FROM productos", {});
     res.status(200).json({ success: true, quantity: result.length, data: result });
   } catch (error) {
-    res.status(505).json({ success: false, message: error.message });
+    res.status(404).json({ success: false, msg: error.message });
   }
 });
 
@@ -19,12 +19,12 @@ router.get("/product/:id", auth.validateToken, async (req, res) => {
       { id: req.params.id }
     );
     if (result.length === 0) {
-      res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
+      res.status(500).json({ success: false, msg: "NOT_FOUND_PRODUCT" });
     } else {
       res.status(200).json({ success: true, quantity: result.length, data: result });
     }
   } catch (error) {
-    res.status(500).json({ success: false, msg: error.message });
+    res.status(404).json({ success: false, msg: error.message });
   }
 });
 
@@ -42,15 +42,15 @@ router.post("/product", auth.authAdmin, auth.validateFormatProduct, async (req, 
   );
   console.log(existsNombre);
   if (existsNombre.length > 0) {
-    res.status(404).json({ success: false, message: "PRODUCT_ALREADY_EXIST" });
+    res.status(501).json({ success: false, msg: "PRODUCT_ALREADY_EXIST" });
   } else {
     try {
       const result = await actions.Insert(
         `INSERT INTO productos (nombre, valor, foto) VALUES (:nombre, :valor, :foto)`,
         product);
-      res.status(201).json({ success: true, message: "product has been created", result: result});
+      res.status(200).json({ success: true, msg: "CREATED_PRODUCT"});
     } catch (error) {
-      res.status(505).json({success: false, msg: error.message});
+      res.status(404).json({success: false, msg: error.message});
     }
   }
 });
@@ -64,15 +64,15 @@ router.put("/product/:id", auth.authAdmin, auth.validateFormatProduct, async (re
   );
   const Id = req.params.id;
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
+    res.status(500).json({ success: false, msg: "NOT_FOUND_PRODUCT" });
   } else {
     try {
       const result = await actions.Update(
         `UPDATE productos SET nombre =:nombre, valor =:valor, foto =:foto  WHERE id = ${Id}`,
         product);
-      res.status(200).json({ success: true, message: "product has been updated" });
+      res.status(200).json({ success: true, msg: "UPDATED_PRODUCT" });
     } catch (error) {
-      res.json({error: `${error.message}`});
+      res.status(404).json({success: false, msg: error.message});
     }
   }
 });
@@ -86,7 +86,7 @@ router.patch("/product/:id", auth.authAdmin, auth.validateFormatProductUpdate, a
     { id: req.params.id }
   );
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
+    res.status(500).json({ success: false, msg: "NOT_FOUND_PRODUCT" });
   } else {
     try {
       const productId = product.id ? product.id : exists[0].id;
@@ -102,9 +102,9 @@ router.patch("/product/:id", auth.authAdmin, auth.validateFormatProductUpdate, a
           foto: productFoto,
         }
       );
-      res.status(200).json({ success: true, message: "product has been updated" });
+      res.status(200).json({ success: true, msg: "UPDATED_PRODUCT" });
     } catch (error) {
-      res.status(500).json({success: false, msg: error.message});
+      res.status(404).json({success: false, msg: error.message});
     }
   }
 });
@@ -115,15 +115,15 @@ router.delete("/product/:id", auth.authAdmin, async (req, res) => {
     { id: req.params.id }
   );
   if (exists.length === 0) {
-    res.status(404).json({ success: false, message: "NOT_FOUND_PRODUCT" });
+    res.status(500).json({ success: false, msg: "NOT_FOUND_PRODUCT" });
   } else {
     try {
       const result = await actions.Delete(
         "DELETE FROM productos WHERE id = :id", { id: req.params.id } );
 
-      res.status(200).json({ success: true, message: "product has been deleted", quantity: exists[0], data: result });
+      res.status(200).json({ success: true, msg: "DELETED_PRODUCT", quantity: exists[0], data: result });
     } catch (error) {
-      res.status(500).json({success: false, msg: error.message});
+      res.status(404).json({success: false, msg: error.message});
     }
   }
 });
