@@ -116,6 +116,7 @@ router.patch("/user/:id", auth.validateToken, auth.validateFormatUpdate, async (
     res.status(500).json({ success: false, message: "NOT_FOUND_USER" });
   } else {
     try {
+      console.log("token data:", req.body.ids)
       const userEmail = user.email ? user.email : exists[0].email;
       const userNombre = user.nombreCompleto
         ? user.nombreCompleto
@@ -129,40 +130,48 @@ router.patch("/user/:id", auth.validateToken, auth.validateFormatUpdate, async (
         : exists[0].contrasena;
       console.log(userEmail);
 
+      const userUpdateData =           {
+        email: userEmail,
+        nombreCompleto: userNombre,
+        telefono: userTelefono,
+        direccion: userDireccion,
+        contrasena: userContrasena
+      }
+
+      if(user.idRole!=undefined){
+        userUpdateData.idRole= user.idRole;
+      }
+
       var update;
       var deniedService = false;
       if(req.body.ids.idRole==1){
+        console.log("Admin service update!!!")
         update = await actions.Update(
-          `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
-          {
-            email: userEmail,
-            nombreCompleto: userNombre,
-            telefono: userTelefono,
-            direccion: userDireccion,
-            contrasena: userContrasena,
-          }
+          `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, idRole=:idRole, 
+          telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
+          userUpdateData
         );
+      } else if(userUpdateData.idRole!=undefined){
+        console.log("ERROR: Denied service update, due to not permisions to update idRole!");
+        deniedService = true;
       } else if (req.body.ids.id == req.params.id){
+        console.log("User service update!!!")
         update = await actions.Update(
           `UPDATE usuarios SET  email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion  = :direccion, contrasena = :contrasena WHERE id = ${Id}`,
-          {
-            email: userEmail,
-            nombreCompleto: userNombre,
-            telefono: userTelefono,
-            direccion: userDireccion,
-            contrasena: userContrasena,
-          }
+          userUpdateData
         );
       } else {
+        console.log("ERROR: Denied service update, not has permisions to change values from others users!!!")
         deniedService = true;
       }
 
+      console.log("update result:", update);
       if (deniedService == true) {
         res.status(400).json({
             success: false,
             msg: "The user has not permissions to carry out this action" });
       } else if (update.length > 0) {
-        res.status(200).json({ success: true, msg: "UPDATE_USER" });
+        res.status(200).json({ success: true, msg: "UPDATED_USER" });
       } else {
         // 500 NOT_FOUND
         res.status(500).json({ success: false, msg: "NOT_FOUND_USER" });

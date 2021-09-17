@@ -3,7 +3,7 @@ const router = express.Router();
 const actions = require("../database/actions");
 const auth = require("../middlewares/security/auth");
 
-router.get("/products",auth.validateToken, async (req, res) => {
+router.get("/products", auth.validateToken, async (req, res) => {
   try {
     const result = await actions.Select("SELECT * FROM productos", {});
     res.status(200).json({ success: true, quantity: result.length, data: result });
