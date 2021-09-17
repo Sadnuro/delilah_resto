@@ -7,8 +7,13 @@ const router = express.Router();
 router.get("/users", auth.authAdmin, async (req, res) => {
   try {
     const result = await actions.Select("SELECT * FROM usuarios", {});
-    res.status(200)
-      .json({ success: true, quantity: result.length, data: result });
+    if (result.length>0){
+      res.status(200)
+        .json({ success: true, msg: "FOUND_USER", quantity: result.length, data: result });
+    } else {
+      res.status(500)
+      .json({ success: false, msg: "NOT_FOUND_USER" });
+    }
   } catch (error) {
     res.status(404).json({ success: false, msg: error.message });
   }
