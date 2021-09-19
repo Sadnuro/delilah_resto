@@ -27,15 +27,15 @@ router.get('/orders', auth.validateToken,  async (req, res)=> {
         }
         
         if (orders.length>0){
-            dataResponse = {success: true, msg: 'FOUND_DATA', quantity: orders.length, data: orders};
-            res.status(202).send(dataResponse);
+            dataResponse = {success: true, msg: 'FOUND_ORDERS', quantity: orders.length, data: orders};
+            res.status(200).send(dataResponse);
         } else {
-            res.status(202).send({success: true, msg: 'NOT_FOUND_DATA'});
+            res.status(500).send({success: true, msg: 'NOT_FOUND_ORDERS'});
         }
 
     } catch(error){
         console.log(error.message);
-        res.status(500).send({success: false, msg: error.message});
+        res.status(404).send({success: false, msg: error.message});
     } 
 });
 
@@ -118,15 +118,14 @@ router.post('/order', auth.validateToken, async (req, res)=> { // User
         console.log("resultOrderUpdate", resultOrderUpdate);
         
         if(resultOrderUpdate.error) {
-            res.status(500).json(resultOrderUpdate.message);
+            res.status(404).json({success: false, msg: resultOrderUpdate.message});
         } else {
-            res.json(resultOrderUpdate);
+            res.status(200).json({success: true, msg: "CREATED_ORDER"});
         } 
         
     } catch (error){
         res.status(404).send({success: false, msg: error.message});
     }
-   
 });
 
 router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (req, res)=> { // Admin
@@ -174,10 +173,10 @@ router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (
         // Implement whether foreign keys should be modified
         const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
 
-        res.json({success: true, msg: 'ORDER_UPDATED', updated: updated});
+        res.status(200).json({success: true, msg: 'UPDATED_ORDER'});
     } catch (error) {
         console.log({ msj: error.message });
-        res.json({success: false, msg: error.message})
+        res.status(404).json({success: false, msg: error.message})
     }
 });
 
@@ -228,10 +227,10 @@ router.patch('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async
         // Implement whether foreign keys should be modified
         const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
 
-        res.json({success: true, msg: 'ORDER_UPDATED', updated: updated});
+        res.status(200).json({success: true, msg: 'UPDATED_ORDER'});
     } catch (error) {
         console.log({ msj: error.message });
-        res.json({success: false, msg: error.message})
+        res.status(404).json({success: false, msg: error.message})
     }
 });
 
@@ -250,18 +249,18 @@ router.delete('/order/:id', auth.authAdmin, async (req, res)=> { // Admin
             ON ordenes.id=:id AND detallesordenes.idOrden=:id`, {id: req.params.id});
             const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
 
-            dataResponse = {success: true, msg: 'Order has been deleted', deleted: toDelete[0].count};
+            dataResponse = {success: true, msg: 'DELETED_ORDER'};
             console.log(dataResponse)
             res.status(200).json(dataResponse);
         } else {
             dataResponse = {success: false, msg: 'NOT_FOUND_ORDER'};
             console.log(dataResponse)
-            res.status(202).json(dataResponse);
+            res.status(500).json(dataResponse);
         }
 
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({success: false, msg: error.message});
+        res.status(404).json({success: false, msg: error.message});
     }
 });
 
