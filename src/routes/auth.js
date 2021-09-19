@@ -25,7 +25,7 @@ router.post('/login', async (req, res)=> {
             res.status(500).json({success: false, msg: "NOT_FOUND_USER"});
         }   
     } catch (error) {
-        res.status(404).json({success: false, msg: error});
+        res.status(404).json({success: false, msg: error.message});
     }
 });
 
