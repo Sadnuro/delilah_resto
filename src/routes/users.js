@@ -84,7 +84,7 @@ router.post(
 );
 
 // PUT | Se usa para modificar todos los valores del usuario excepto el [id]
-router.put("/user/:id", auth.authAdmin, auth.validateFormat, async (req, res) => {
+router.put("/user/:id", auth.authAdmin, auth.validateFormat, auth.validateUser, async (req, res) => {
     const user = req.body;
     const exists = await actions.Select(
       "SELECT * FROM usuarios WHERE id = :id",
@@ -99,7 +99,8 @@ router.put("/user/:id", auth.authAdmin, auth.validateFormat, async (req, res) =>
     } else {
       try {
         const result = await actions.Update(
-          `UPDATE usuarios SET email = :email, nombreCompleto = :nombreCompleto, telefono = :telefono, direccion = :direccion, contrasena = :contrasena  WHERE id = ${Id}`,
+          `UPDATE usuarios SET nombreUsuario=:nombreUsuario, email = :email, nombreCompleto = :nombreCompleto,  
+          telefono = :telefono, direccion = :direccion, contrasena = :contrasena, idRole = :idRole WHERE id = ${Id}`,
           user
         );
         res.status(200).json({ success: true, msg: "UPDATED_USER" });
@@ -144,7 +145,9 @@ router.patch("/user/:id", auth.validateToken, auth.validateFormatUpdate, async (
       }
 
       if(user.idRole!=undefined){
-        userUpdateData.idRole= user.idRole;
+        userUpdateData.idRole = user.idRole;
+      } else {
+        userUpdateData.idRole = exists[0].idRole;
       }
 
       var update;
@@ -245,7 +248,7 @@ router.delete("/user/:id", auth.authAdmin, async (req, res) => {
         .status(200)
         .json({
           success: true,
-          message: "user has been deleted",
+          message: "DELETED_USER",
           data: result,
         });
     } catch (error) {

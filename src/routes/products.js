@@ -121,7 +121,7 @@ router.delete("/product/:id", auth.authAdmin, async (req, res) => {
       const result = await actions.Delete(
         "DELETE FROM productos WHERE id = :id", { id: req.params.id } );
 
-      res.status(200).json({ success: true, msg: "DELETED_PRODUCT", quantity: exists[0], data: result });
+      res.status(200).json({ success: true, msg: "DELETED_PRODUCT" });
     } catch (error) {
       res.status(404).json({success: false, msg: error.message});
     }

@@ -123,7 +123,8 @@ module.exports.validateFormatProduct = (req, res, next) => {
         result.valor = "INCORRECT_FORMAT"
     } 
     // Validate address
-    if (body.foto==undefined || !/^[a-zA-Z]+$/.test(body.foto)){
+    const regex_url = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+    if (body.foto==undefined || !regex_url.test(body.foto)){
         status = false;
         result.foto = "INCORRECT_FORMAT"
     }
@@ -208,6 +209,10 @@ module.exports.validateFormatUpdate = (req, res, next) => {
      if (body.contrasena!=undefined && !/^[aA-zZ0-9_\.]+$/.test(body.contrasena)){
          status = false;
          result.contrasena = "INCORRECT_FORMAT";
+     }
+     if (body.idRole!=undefined && !/^\d+$/.test(body.idRole)){
+         status = false;
+         result.idRole = "INCORRECT_FORMAT";
      }
  
      if (status===true){

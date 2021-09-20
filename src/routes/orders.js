@@ -27,10 +27,10 @@ router.get('/orders', auth.validateToken,  async (req, res)=> {
         }
         
         if (orders.length>0){
-            dataResponse = {success: true, msg: 'FOUND_ORDERS', quantity: orders.length, data: orders};
+            dataResponse = {success: true, msg: 'FOUND_ORDER', quantity: orders.length, data: orders};
             res.status(200).send(dataResponse);
         } else {
-            res.status(500).send({success: true, msg: 'NOT_FOUND_ORDERS'});
+            res.status(500).send({success: true, msg: 'NOT_FOUND_ORDER'});
         }
 
     } catch(error){
@@ -60,9 +60,9 @@ router.get('/order/:id', auth.validateToken, async (req, res)=> {// Admin | User
         console.log("order:", order)
 
         if(order.length>0){
-            res.status(202).send({success: true, quantity: order.length, msg: 'FOUND_DATA', data: order});
+            res.status(202).send({success: true, quantity: order.length, msg: 'FOUND_ORDER', data: order});
         } else {
-            res.status(500).send({success: false, msg: 'NOT_FOUND_DATA'});
+            res.status(500).send({success: false, msg: 'NOT_FOUND_ORDER'});
         }
 
     } catch (error) {
@@ -136,44 +136,51 @@ router.put('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async (
         console.log("order:", order)
 
         updated = {};
-        
-        // Implement whether foreign keys should be modified
-        // const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
-
-        // if (order.id){
-        //     const resultIdUpdate = await actions.Update(`UPDATE ordenes SET id=:id WHERE id=${Id}`, order);
-        //     resultIdUpdate[1]>0 ? updated.id = order.id : updated=update;
-        // }
-
-        
-        // if (order.IdUser){
-        //     const resultIdUserUpdate = await actions.Update(`UPDATE ordenes SET IdUser=:IdUser  WHERE id=${Id}`, order);
-        //     console.log("resultIdUserUpdate:", resultIdUserUpdate);
-        //     resultIdUserUpdate[1]>0 ? updated.IdUser = order.IdUser : updated=updated;
-        // }
-
-        if (order.nombre){
-            const resultNombreUpdate = await actions.Update(`UPDATE ordenes SET nombre=:nombre WHERE id=${Id}`, order);
-            resultNombreUpdate[1]>0 ?  updated.nombre = order.nombre : updated=updated;
+        const exists = await actions.Select("SELECT * FROM ordenes WHERE id = :id", {
+            id: req.params.id,
+        });
+        console.log("exists order:", exists)
+        if (exists.length>0){
+            // Implement whether foreign keys should be modified
+            // const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
+    
+            // if (order.id){
+            //     const resultIdUpdate = await actions.Update(`UPDATE ordenes SET id=:id WHERE id=${Id}`, order);
+            //     resultIdUpdate[1]>0 ? updated.id = order.id : updated=update;
+            // }
+    
+            
+            // if (order.IdUser){
+            //     const resultIdUserUpdate = await actions.Update(`UPDATE ordenes SET IdUser=:IdUser  WHERE id=${Id}`, order);
+            //     console.log("resultIdUserUpdate:", resultIdUserUpdate);
+            //     resultIdUserUpdate[1]>0 ? updated.IdUser = order.IdUser : updated=updated;
+            // }
+    
+            if (order.nombre){
+                const resultNombreUpdate = await actions.Update(`UPDATE ordenes SET nombre=:nombre WHERE id=${Id}`, order);
+                resultNombreUpdate[1]>0 ?  updated.nombre = order.nombre : updated=updated;
+            }
+            if (order.total){
+                const resultTotalUpdate = await actions.Update(`UPDATE ordenes SET total=:total WHERE id=${Id}`, order);
+                resultTotalUpdate[1]>0 ?  updated.total = order.total : updated=updated;
+            }
+            if (order.tipoPago){
+                const resultTipoPagoUpdate = await actions.Update(`UPDATE ordenes SET tipoPago=:tipoPago WHERE id=${Id}`, order);
+                resultTipoPagoUpdate[1]>0 ?  updated.tipoPago = order.tipoPago : updated=updated;
+                console.log("resultTipoPagoUpdate:", resultTipoPagoUpdate);
+            }
+            if (order.estado){
+                const resultEstadoUpdate = await actions.Update(`UPDATE ordenes SET estado=:estado WHERE id=${Id}`, order);
+                resultEstadoUpdate[1]>0 ?  updated.estado = order.estado : updated=updated;
+            }
+    
+            // Implement whether foreign keys should be modified
+            const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
+    
+            res.status(200).json({success: true, msg: 'UPDATED_ORDER'});
+        } else {
+            res.status(500).json({ success: false, message: "NOT_FOUND_ORDER" });
         }
-        if (order.total){
-            const resultTotalUpdate = await actions.Update(`UPDATE ordenes SET total=:total WHERE id=${Id}`, order);
-            resultTotalUpdate[1]>0 ?  updated.total = order.total : updated=updated;
-        }
-        if (order.tipoPago){
-            const resultTipoPagoUpdate = await actions.Update(`UPDATE ordenes SET tipoPago=:tipoPago WHERE id=${Id}`, order);
-            resultTipoPagoUpdate[1]>0 ?  updated.tipoPago = order.tipoPago : updated=updated;
-            console.log("resultTipoPagoUpdate:", resultTipoPagoUpdate);
-        }
-        if (order.estado){
-            const resultEstadoUpdate = await actions.Update(`UPDATE ordenes SET estado=:estado WHERE id=${Id}`, order);
-            resultEstadoUpdate[1]>0 ?  updated.estado = order.estado : updated=updated;
-        }
-
-        // Implement whether foreign keys should be modified
-        const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
-
-        res.status(200).json({success: true, msg: 'UPDATED_ORDER'});
     } catch (error) {
         console.log({ msj: error.message });
         res.status(404).json({success: false, msg: error.message})
@@ -190,44 +197,51 @@ router.patch('/order/:id', auth.authAdmin, auth.validateFormatUpdateOrder, async
         console.log("order:", order)
 
         updated = {};
-        
-        // Implement whether foreign keys should be modified
-        // const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
+        const exists = await actions.Select("SELECT * FROM ordenes WHERE id = :id", {
+            id: req.params.id,
+        });
+        console.log("exists order:", exists)
+        if (exists.length>0){
+            // Implement whether foreign keys should be modified
+            // const UNSET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 0");
 
-        // if (order.id){
-        //     const resultIdUpdate = await actions.Update(`UPDATE ordenes SET id=:id WHERE id=${Id}`, order);
-        //     resultIdUpdate[1]>0 ? updated.id = order.id : updated=update;
-        // }
+            // if (order.id){
+            //     const resultIdUpdate = await actions.Update(`UPDATE ordenes SET id=:id WHERE id=${Id}`, order);
+            //     resultIdUpdate[1]>0 ? updated.id = order.id : updated=update;
+            // }
 
-        
-        // if (order.IdUser){
-        //     const resultIdUserUpdate = await actions.Update(`UPDATE ordenes SET IdUser=:IdUser  WHERE id=${Id}`, order);
-        //     console.log("resultIdUserUpdate:", resultIdUserUpdate);
-        //     resultIdUserUpdate[1]>0 ? updated.IdUser = order.IdUser : updated=updated;
-        // }
+            
+            // if (order.IdUser){
+            //     const resultIdUserUpdate = await actions.Update(`UPDATE ordenes SET IdUser=:IdUser  WHERE id=${Id}`, order);
+            //     console.log("resultIdUserUpdate:", resultIdUserUpdate);
+            //     resultIdUserUpdate[1]>0 ? updated.IdUser = order.IdUser : updated=updated;
+            // }
 
-        if (order.nombre){
-            const resultNombreUpdate = await actions.Update(`UPDATE ordenes SET nombre=:nombre WHERE id=${Id}`, order);
-            resultNombreUpdate[1]>0 ?  updated.nombre = order.nombre : updated=updated;
+            if (order.nombre){
+                const resultNombreUpdate = await actions.Update(`UPDATE ordenes SET nombre=:nombre WHERE id=${Id}`, order);
+                resultNombreUpdate[1]>0 ?  updated.nombre = order.nombre : updated=updated;
+            }
+            if (order.total){
+                const resultTotalUpdate = await actions.Update(`UPDATE ordenes SET total=:total WHERE id=${Id}`, order);
+                resultTotalUpdate[1]>0 ?  updated.total = order.total : updated=updated;
+            }
+            if (order.tipoPago){
+                const resultTipoPagoUpdate = await actions.Update(`UPDATE ordenes SET tipoPago=:tipoPago WHERE id=${Id}`, order);
+                resultTipoPagoUpdate[1]>0 ?  updated.tipoPago = order.tipoPago : updated=updated;
+                console.log("resultTipoPagoUpdate:", resultTipoPagoUpdate);
+            }
+            if (order.estado){
+                const resultEstadoUpdate = await actions.Update(`UPDATE ordenes SET estado=:estado WHERE id=${Id}`, order);
+                resultEstadoUpdate[1]>0 ?  updated.estado = order.estado : updated=updated;
+            }
+
+            // Implement whether foreign keys should be modified
+            const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
+
+            res.status(200).json({success: true, msg: 'UPDATED_ORDER'});
+        } else {
+            res.status(500).json({ success: false, message: "NOT_FOUND_ORDER" });
         }
-        if (order.total){
-            const resultTotalUpdate = await actions.Update(`UPDATE ordenes SET total=:total WHERE id=${Id}`, order);
-            resultTotalUpdate[1]>0 ?  updated.total = order.total : updated=updated;
-        }
-        if (order.tipoPago){
-            const resultTipoPagoUpdate = await actions.Update(`UPDATE ordenes SET tipoPago=:tipoPago WHERE id=${Id}`, order);
-            resultTipoPagoUpdate[1]>0 ?  updated.tipoPago = order.tipoPago : updated=updated;
-            console.log("resultTipoPagoUpdate:", resultTipoPagoUpdate);
-        }
-        if (order.estado){
-            const resultEstadoUpdate = await actions.Update(`UPDATE ordenes SET estado=:estado WHERE id=${Id}`, order);
-            resultEstadoUpdate[1]>0 ?  updated.estado = order.estado : updated=updated;
-        }
-
-        // Implement whether foreign keys should be modified
-        const SET_FK = await actions.query("SET FOREIGN_KEY_CHECKS = 1");
-
-        res.status(200).json({success: true, msg: 'UPDATED_ORDER'});
     } catch (error) {
         console.log({ msj: error.message });
         res.status(404).json({success: false, msg: error.message})
