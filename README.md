@@ -24,7 +24,7 @@ For importing the database schema on your MySQL, you only open your workbench an
  9. Finally refresh schemas in the sidebar left. A schema with the name `delilahresto` should appear.
 
 ### connect the database with the project
-Open the project in your editor code and open the file action.js in the database folder. then in line 2, you fin the  following code: 
+Open the project in your editor code and open the file `actions.js` in the `src/database/` folder. then in line 2, you fin the  following code: 
 
     const database = new Sequelize("mysql://root:PASSWORD@localhost:3306/delilahresto");
  in the code, you must change the `PASSWORD` with your MySQL password.
@@ -42,7 +42,7 @@ the final requirement is to install the required modules, you need to open your 
 the server is configured to run on the port 3000, which means the server is listening in the http://localhost:3000, if you want to change the port, you can do it in the server.js.
 to start the server you only need to run in your **computer terminal** the following command:
 
-    node src/server
+    node src/server.js
 > also you can install [nodemon](https://www.npmjs.com/package/nodemon) to work more comfortable
 
 ## Autores  ✒️
