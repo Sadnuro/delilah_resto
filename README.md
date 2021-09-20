@@ -42,7 +42,7 @@ the final requirement is to install the required modules, you need to open your 
 the server is configured to run on the port 3000, which means the server is listening in the http://localhost:3000, if you want to change the port, you can do it in the server.js.
 to start the server you only need to run in your **computer terminal** the following command:
 
-    node src/server
+    node src/server.js
 > also you can install [nodemon](https://www.npmjs.com/package/nodemon) to work more comfortable
 
 ## Autores  ✒️
