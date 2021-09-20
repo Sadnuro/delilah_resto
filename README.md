@@ -14,7 +14,7 @@ With node.js and your editor code in your computer the next step its import the 
 For importing the database schema on your MySQL, you only open your workbench and follow these steps:
 
  1. Open your MySQL workbench. 
- 2. In the home screen MySQL Connection: `Create/setup new connection` with name `deliahresto`. Verify that the `Hostname` is `127.0.0.1` and the `Port` `3306`.
+ 2. In the home screen MySQL Connection: `Create/setup new connection` with name `delilahresto`. Verify that the `Hostname` is `127.0.0.1` and the `Port` `3306`.
  3. Open created connection and provide access credentials
  4. Click `Server` on the main tool bar.
  5. Select  `Data Import`.
