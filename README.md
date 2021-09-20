@@ -20,8 +20,7 @@ For importing the database schema on your MySQL, you only open your workbench an
  5. Select  `Data Import`.
  6. In the `Import Options` section, check the `Import from Self-Contained File`.
  7. Click the  `...`  and navigate to where your MySQL backup file is located, select the backup you want to load, and click  `OK`.
- 8. In the next section (`Default Schema to be Imported To`), select from the drop-down bar the `mysql` option.
- 9. Finally, select the `Start Import`  on the bottom right.
+ 8. Finally, select the `Start Import`  on the bottom right.
 
 ### connect the database with the project
 Open the project in your editor code and open the file action.js in the database folder. then in line 2, you fin the  following code: 
