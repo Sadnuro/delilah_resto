@@ -48,8 +48,8 @@ to start the server you only need to run in your **computer terminal** the follo
 ## Autores  ✒️
 
 ### this  API was done by:
--   **Andrés Villanueva**  -  _Trabajo Inicial_  -  [theKaise13](https://github.com/thekaise13)
--   **Fulanito Detal**  -  _Trabajo Inicial_ -  [sadnuro](https://github.com/Sadnuro)
+-   **Cristian Caicedo**  -  _Trabajo Inicial_  -  [theKaise13](https://github.com/thekaise13)
+-   **Sadith Nunez**  -  _Trabajo Inicial_ -  [sadnuro](https://github.com/Sadnuro)
 
 ## Licencia  📄
 
