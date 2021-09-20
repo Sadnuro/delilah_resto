@@ -14,19 +14,21 @@ With node.js and your editor code in your computer the next step its import the 
 For importing the database schema on your MySQL, you only open your workbench and follow these steps:
 
  1. Open your MySQL workbench. 
- 2. Click `Server` on the main tool bar.
- 3. Select  `Data Import`.
- 4. You should see a link to the default dump folder, typically your  `Documents`  folder in a subfolder titled  `dumps`.
- 5. Click the  `...`  and navigate to where your MySQL backup file is located, select the backup you want to load, and click  `OK`.
- 6. The schema names in your dump should appear on the left-hand side, at the bottom. Select the schemas that need to be restored.
- 7. Select  `Start Import`  on the bottom right.
+ 2. In the home screen MySQL Connection: `Create/setup new connection` with name `delilahresto`. Verify that the `Hostname` is `127.0.0.1` and the `Port` `3306`.
+ 3. Open created connection and provide access credentials
+ 4. Click `Server` on the main tool bar.
+ 5. Select  `Data Import`.
+ 6. In the `Import Options` section, check the `Import from Self-Contained File`.
+ 7. Click the  `...`  and navigate to where your MySQL backup file is located, select the backup you want to load, and click  `OK`.
+ 8. Select the `Start Import`  on the bottom right.
+ 9. Finally refresh schemas in the sidebar left. A schema with the name `delilahresto` should appear.
 
 ### connect the database with the project
 Open the project in your editor code and open the file action.js in the database folder. then in line 2, you fin the  following code: 
 
     const database = new Sequelize("mysql://root:PASSWORD@localhost:3306/delilahresto");
  in the code, you must change the `PASSWORD` with your MySQL password.
- that's all, the database schema is connect with the project.
+ that's all, the database schema is connect with the project. 
 
 
 ### install node_modules

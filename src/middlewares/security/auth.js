@@ -31,7 +31,7 @@ module.exports.validateToken = async (req, res, next) => {
         }
     } else{
         // 404 GENERAL_ERROR
-        res.status(404).send({success: false, msg: 'No se proporcionó token de identificación'});
+        res.status(401).send({success: false, msg: 'No identification token provided'});
     }
 }
 
@@ -47,20 +47,16 @@ module.exports.authAdmin = async (req, res, next)=>{    // Check user rol in db
                 return next();
             }else {
                 // 400 NOT_PERMISIONS
-                res.status(400).json({ 
-                    error: "The user has not permissions to carry out this action"
-                })
+                res.status(400).json({ success: false, msg: "The user has not permissions to carry out this action" })
             }
         } catch(error){
             console.log({msj: error.message});
-            // 400 NOT_PERMISIONS
-            res.status(400).json({
-                error: "The user has not permissions to carry out this action"
-            })
+            // 404 NOT_PERMISIONS
+            res.status(404).json({ success: false, msg: error.message })
         }
     }else {
         // 404 GENERAL_ERROR
-        res.status(404).send({success: false, msg: 'No se proporcionó token de identificación'});
+        res.status(401).send({success: false, msg: 'No identification token provided'});
     }
 }
 
@@ -127,7 +123,8 @@ module.exports.validateFormatProduct = (req, res, next) => {
         result.valor = "INCORRECT_FORMAT"
     } 
     // Validate address
-    if (body.foto==undefined || !/^[a-zA-Z]+$/.test(body.foto)){
+    const regex_url = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+    if (body.foto==undefined || !regex_url.test(body.foto)){
         status = false;
         result.foto = "INCORRECT_FORMAT"
     }
@@ -213,6 +210,10 @@ module.exports.validateFormatUpdate = (req, res, next) => {
          status = false;
          result.contrasena = "INCORRECT_FORMAT";
      }
+     if (body.idRole!=undefined && !/^\d+$/.test(body.idRole)){
+         status = false;
+         result.idRole = "INCORRECT_FORMAT";
+     }
  
      if (status===true){
          next()
@@ -275,14 +276,14 @@ module.exports.validateFormatUpdateOrder = async (req, res, next) => {
     } else {
         console.log(result)
         // 405 INCORRECT_FORMAT
-        res.status(404).send(result);
+        res.status(405).send(result);
     }
 }
 
 
 // Se utiliza cuando ocurre un registro de usuario para verificar 
 // existencia del userName, correo y datos únicos en un registro previo
-module.exports.validateUser =async  (req, res, next) => { // Check exists in db
+module.exports.validateUser = async  (req, res, next) => { // Check exists in db
     try {
         const body = req.body;
         user = {
