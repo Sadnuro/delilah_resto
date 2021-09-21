@@ -21,9 +21,9 @@
   "components": {
     "securitySchemes": {
       "ApiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "API-KEY"
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   },
@@ -47,9 +47,11 @@
             "name": "body",
             "description": "Object with autenticate user data: userName and password.",
             "required": true,
-            "schema": {
-              "$ref": "#/definitions/loginBody"
-            }
+            "security": [
+              {
+                "apiKeyAuth": []
+              }
+            ]
           }
         ],
         "responses": {
@@ -127,6 +129,14 @@
         ],
         "produces": [
           "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          }
         ],
         "responses": {
           "200": {
@@ -349,6 +359,12 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
           }
         ],
         "responses": {
@@ -463,21 +479,27 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "user data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "user id",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "user data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
             }
           }
         ],
@@ -631,21 +653,27 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "properties of the user",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/User"
-            }
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "user id",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "properties of the user",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
             }
           }
         ],
@@ -786,6 +814,12 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
           }
         ],
         "responses": {
@@ -900,6 +934,14 @@
         "produces": [
           "application/json"
         ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "array with the products data",
@@ -995,6 +1037,12 @@
           "application/json"
         ],
         "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
           {
             "in": "body",
             "name": "body",
@@ -1144,6 +1192,12 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
           }
         ],
         "responses": {
@@ -1240,21 +1294,27 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "product data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/product"
-            }
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "product id",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "product data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/product"
             }
           }
         ],
@@ -1388,21 +1448,27 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "product data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/product"
-            }
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "product id",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "product data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/product"
             }
           }
         ],
@@ -1543,6 +1609,12 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
           }
         ],
         "responses": {
@@ -1656,6 +1728,14 @@
         ],
         "produces": [
           "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          }
         ],
         "responses": {
           "200": {
@@ -1771,6 +1851,12 @@
         ],
         "parameters": [
           {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
             "in": "body",
             "name": "body",
             "description": "order data",
@@ -1855,6 +1941,14 @@
         ],
         "produces": [
           "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          }
         ],
         "responses": {
           "200": {
@@ -1968,21 +2062,27 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "order data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/order"
-            }
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "order id",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "order data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/order"
             }
           }
         ],
@@ -2116,21 +2216,27 @@
         ],
         "parameters": [
           {
-            "in": "body",
-            "name": "body",
-            "description": "order data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/OrderPat"
-            }
-          },
-          {
             "in": "path",
             "name": "id",
             "description": "order id",
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "order data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/OrderPat"
             }
           }
         ],
@@ -2271,6 +2377,12 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "Authorization",
+            "description": "You must send a token in the following format: Bearer [Token obtained from login]",
+            "required": true
           }
         ],
         "responses": {
