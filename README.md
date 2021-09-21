@@ -47,13 +47,13 @@ to start the server you only need to run in your **computer terminal** the follo
 
 At the root of the project, you can find the folder `docs` with the information about how works the endpoints.
 
-## Autores  ✒️
+## Authors  ✒️
 
 ### this  API was done by:
 -   **Cristian Caicedo**  -  _Trabajo Inicial_  -  [theKaise13](https://github.com/thekaise13)
 -   **Sadith Nunez**  -  _Trabajo Inicial_ -  [sadnuro](https://github.com/Sadnuro)
 
-## Licencia  📄
+## License  📄
 
-Este proyecto está bajo la Licencia  -"MIT"
+This project is under license from  -"MIT"
 url: "http://www.apache.org/lice
