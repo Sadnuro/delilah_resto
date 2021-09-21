@@ -15,10 +15,11 @@ schemes:
 - "http"
 components:
   securitySchemes:
-    ApiKeyAuth:   
-      type: apiKey
-      in: header       
-      name: API-KEY  
+    ApiKeyAuth:  # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
 paths:
   /login:
     post:
@@ -35,8 +36,8 @@ paths:
         name: "body"
         description: "Object with autenticate user data: userName and password."
         required: true
-        schema: 
-          $ref: "#/definitions/loginBody"
+        security: 
+          - apiKeyAuth: []
       responses:
         "200":
           description: "Successful login"
@@ -84,6 +85,11 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true                
       responses:
         "200":
           description: "array with the users data"
@@ -223,6 +229,10 @@ paths:
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "data user"
@@ -292,18 +302,22 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "user data"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
       - in: "path"
         name: "id"
         description: "user id"
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
+      - in: "body"
+        name: "body"
+        description: "user data"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
       responses:
         "200":
           description: "User has been updated"
@@ -396,18 +410,22 @@ paths:
       - "application/json"
       - "application/xml"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "properties of the user"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
       - in: "path"
         name: "id"
         description: "user id"
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
+      - in: "body"
+        name: "body"
+        description: "properties of the user"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
       responses:
         "200":
           description: "User has been updated"
@@ -494,6 +512,10 @@ paths:
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "User has been updated"
@@ -563,6 +585,11 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "array with the products data"
@@ -622,6 +649,10 @@ paths:
       produces:
       - "application/json"
       parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       - in: "body"
         name: "body"
         description: "object whith the product data"
@@ -714,6 +745,10 @@ paths:
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "data product"
@@ -771,18 +806,22 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "product data"
-        required: true
-        schema:
-          $ref: "#/definitions/product"
       - in: "path"
         name: "id"
         description: "product id"
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
+      - in: "body"
+        name: "body"
+        description: "product data"
+        required: true
+        schema:
+          $ref: "#/definitions/product"
       responses:
         "200":
           description: "product has been updated"
@@ -850,7 +889,7 @@ paths:
                     type: string   
           schema:
             $ref: "#/definitions/product_NotFound"
-    
+
     patch:
       security:
         - ApiKeyAuth: []
@@ -863,18 +902,22 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "product data"
-        required: true
-        schema:
-          $ref: "#/definitions/product"
       - in: "path"
         name: "id"
         description: "product id"
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
+      - in: "body"
+        name: "body"
+        description: "product data"
+        required: true
+        schema:
+          $ref: "#/definitions/product"
       responses:
         "200":
           description: "product has been updated"
@@ -961,6 +1004,10 @@ paths:
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "product has been delete"
@@ -1029,6 +1076,11 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "Returned orders successful"
@@ -1099,6 +1151,10 @@ paths:
       produces:
       - "application/json"
       parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       - in: "body"
         name: "body"
         description: "order data"
@@ -1152,6 +1208,11 @@ paths:
       - "application/json"
       produces:
       - "application/json"
+      parameters:
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "Returned orders successful"
@@ -1221,18 +1282,22 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "order data"
-        required: true
-        schema:
-          $ref: "#/definitions/order"
       - in: "path"
         name: "id"
         description: "order id"
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
+      - in: "body"
+        name: "body"
+        description: "order data"
+        required: true
+        schema:
+          $ref: "#/definitions/order"
       responses:
         "200":
           description: "order has been updated"
@@ -1313,18 +1378,22 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        description: "order data"
-        required: true
-        schema:
-          $ref: "#/definitions/OrderPat"
       - in: "path"
         name: "id"
         description: "order id"
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
+      - in: "body"
+        name: "body"
+        description: "order data"
+        required: true
+        schema:
+          $ref: "#/definitions/OrderPat"
       responses:
         "200":
           description: "order has been updated"
@@ -1410,6 +1479,10 @@ paths:
         required: true
         schema:
           type: string
+      - in: "header"
+        name: "Authorization"
+        description: "You must send a token in the following format: Bearer [Token obtained from login]"
+        required: true   
       responses:
         "200":
           description: "order has been deleted"
@@ -2047,3 +2120,4 @@ definitions:
         $ref: "#/definitions/successFalse"
       msg:
         $ref: "#/definitions/msgUserNotFound"
+  
