@@ -45,6 +45,8 @@ to start the server you only need to run in your **computer terminal** the follo
     node src/server.js
 > also you can install [nodemon](https://www.npmjs.com/package/nodemon) to work more comfortable
 
+At the root of the project, you can find the folder `docs` with the information about how works the endpoints.
+
 ## Autores  ✒️
 
 ### this  API was done by:
