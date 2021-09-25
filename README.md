@@ -5,6 +5,7 @@ Hi! in this read me, you can find a guide for installing and using **Delilah Res
 
 # Start up 🚀
 These instructions will allow you to get a copy of the project running on your local machine for development and testing purposes.
+![image](https://user-images.githubusercontent.com/82292865/134758742-bb5f8b4f-30bb-4d92-93b3-9613b0e4b6d0.png)
 
 ## Requirements  📋
 In the first place,  you must have node.js on your computer, if you don't have it in this [link](https://nodejs.org/en/) you can get it. Also you must need some editor code. I recommend you you [visual Studio Code](https://code.visualstudio.com/)
