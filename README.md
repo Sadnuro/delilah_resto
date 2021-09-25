@@ -33,13 +33,12 @@ Open the project in your editor code and open the file `db_connection_data.js` i
         conf_password   = '12345',
         conf_port       = '3306';
         
- In the code, you must change the `conf_user` with your MySQL user and `conf_password` with your MySQL password.
+ In the code, the code should only change the `conf_user` with your MySQL user and `conf_password` with your MySQL password, the other parameters must keep the default value.
  After configuring and starting the server in the following steps, you should see the following message if the connection to the database was successful
  ![image](https://user-images.githubusercontent.com/82292865/134759011-fb73c317-eb6b-4170-895f-1b0ca107bb05.png)
 
-`Executing (default): SELECT 1+1 AS result
- Connection has been established successfully
-`
+`Executing (default): SELECT 1+1 AS result`
+`Connection has been established successfully`
 
 ### install node_modules
 the final requirement is to install the required modules, you need to open your **computer terminal** in the Delilah resto folder and run the following command:
