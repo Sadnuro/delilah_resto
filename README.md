@@ -24,9 +24,15 @@ For importing the database schema on your MySQL, you only open your workbench an
  9. Finally refresh schemas in the sidebar left. A schema with the name `delilahresto` should appear.
 
 ### connect the database with the project
-Open the project in your editor code and open the file `actions.js` in the `src/database/` folder. then in line 2, you fin the  following code: 
+Open the project in your editor code and open the file `db_connection_data.js` in the `src/database/` folder. You find the  following code: 
+![image](https://user-images.githubusercontent.com/82292865/134758922-324b3fbe-0b4d-41da-9852-b849d43916e3.png)
 
-    const database = new Sequelize("mysql://root:PASSWORD@localhost:3306/delilahresto");
+    const   conf_db_host    = 'localhost',
+        conf_db_name    = 'delilahresto',
+        conf_user       = 'root',
+        conf_password   = '12345',
+        conf_port       = '3306';
+        
  in the code, you must change the `PASSWORD` with your MySQL password.
  that's all, the database schema is connect with the project. 
 
